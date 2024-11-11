@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sparade Filmer</title>
+</head>
+<body>
+<h1>Sparade filmer</h1>
+<div>
+    <a href="/">Tillbaka</a>
+</div>
+<div>
+    <ul>
+        <li th:each="film : ${films}">
+            <span th:text="${film.title}">Film Title</span> -
+            <a th:href="@{/films/savedfilms/{id}(id=${film.filmid})}">Se detaljer (Bara ett JSON objekt)</a>
+            <a th:href="@{/films/savedfilms/{id}/delete(id=${film.id})}">Delete (ej implementerat)</a>
+            <br/>
+            <img th:src="'https://image.tmdb.org/t/p/original/' + ${film.poster_path}">
+
+            <br/>
+            <img th:src="'data:image/jpeg;base64, ' + ${film.base64Image}">
+
+        </li>
+    </ul>
+</div>
+</body>
+</html>

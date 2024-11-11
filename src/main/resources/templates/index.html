@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Film Manager</title>
+</head>
+<body>
+<h1>Film Hanterare</h1>
+<div>
+    <a href="/movies/savedfilms">Sparade filmer</a>
+    <br>
+    <a href="/movies/search">kanske söka film PÅGÅENDE ARBETE</a>
+    <br>
+    <a href="/movies/info">Film info ARBETE PÅGÅR</a>
+</div>
+<h2>All Films</h2>
+
+<div>
+    <ul>
+        <li th:each="film : ${films}">
+
+            <a th:href="@{/films/getfilm/{id}(id=${film.filmid})}"><span th:text="${film.title}">Title</span></a>
+        </li>
+
+    </ul>
+</div>
+</body>
+</html>
