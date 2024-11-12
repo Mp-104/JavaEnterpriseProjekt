@@ -31,13 +31,13 @@ public class FilmController {
 
         List<FilmModel> films = filmService.findAll();
 
-        for (FilmModel film : films) {
+        /*for (FilmModel film : films) {
 
             String base64Image = Base64.getEncoder().encodeToString(film.getImage());
 
             film.setBase64Image(base64Image);
 
-        }
+        }*/
 
         model.addAttribute("films", films);
 

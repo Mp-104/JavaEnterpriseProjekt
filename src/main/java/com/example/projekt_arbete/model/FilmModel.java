@@ -14,15 +14,13 @@ public class FilmModel implements Response {
 
     @Lob
     private byte[] image;
-    @Transient
+
+    @Lob
     private String base64Image;
 
-    public byte[] getImage() {
-        return image;
-    }
-    public void setImage(byte[] image) {
-        this.image = image;
-    }
+    @ManyToOne
+    @JoinColumn(name = "custom_user_id")
+    private CustomUser customUser;
 
     private boolean adult;
     private String backdropPath;
@@ -296,5 +294,12 @@ public class FilmModel implements Response {
 
     public void setBase64Image(String base64Image) {
         this.base64Image = base64Image;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+    public void setImage(byte[] image) {
+        this.image = image;
     }
 }

@@ -58,6 +58,10 @@ public class FilmService implements IFilmService{
 
         }
 
+        String base64 = Base64.getEncoder().encodeToString(film.getImage());
+
+        film.setBase64Image(base64);
+
         return filmRepository.save(film);
     }
 
