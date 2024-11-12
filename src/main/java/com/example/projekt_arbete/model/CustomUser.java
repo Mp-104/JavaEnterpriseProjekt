@@ -1,6 +1,8 @@
 package com.example.projekt_arbete.model;
 
+import com.example.projekt_arbete.authorities.UserRole;
 import jakarta.persistence.*;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.List;
 
@@ -13,6 +15,9 @@ public class CustomUser {
 
     private String username;
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    private UserRole userRole;
 
     @OneToMany(mappedBy = "customUser", cascade = CascadeType.ALL)
     private List<FilmModel> filmList;
@@ -52,6 +57,24 @@ public class CustomUser {
 
     public void setFilmList(List<FilmModel> filmList) {
         this.filmList = filmList;
+    }
+
+    public List<SimpleGrantedAuthority> getAuthorities () {
+        return userRole.getAuthorities();
+    }
+    // Permissions include ["GET", "DELETE"]
+    //@JsonIgnore //userRepository.save() will print out these details otherwise
+    public List<String> getPermissions () {
+        return userRole.getPermission();
+    }
+
+    //Role include: ADMIN (UserRoles.name())
+    public UserRole getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(UserRole userRole) {
+        this.userRole = userRole;
     }
 
     public boolean isAccountNonExpired() {
