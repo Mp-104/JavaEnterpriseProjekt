@@ -44,4 +44,10 @@ public class FilmController {
         return "savedfilms";
     }
 
+    @GetMapping("/login")
+    public String loginPage () {
+
+        return "login";
+    }
+
 }

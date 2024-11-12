@@ -1,5 +1,6 @@
 package com.example.projekt_arbete.service;
 
+import com.example.projekt_arbete.model.CustomUser;
 import com.example.projekt_arbete.model.FilmDTO;
 import com.example.projekt_arbete.model.FilmModel;
 import com.example.projekt_arbete.repository.FilmRepository;
@@ -8,14 +9,14 @@ import com.example.projekt_arbete.response.IntegerResponse;
 import com.example.projekt_arbete.response.ListResponse;
 import com.example.projekt_arbete.response.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
@@ -24,8 +25,16 @@ import java.util.*;
 @Service
 public class FilmService implements IFilmService{
 
+    //@Autowired
+    private final FilmRepository filmRepository;
+
+    private final IUserService userService;
+
     @Autowired
-    private FilmRepository filmRepository;
+    public FilmService (FilmRepository filmRepository, IUserService userService) {
+        this.filmRepository = filmRepository;
+        this.userService = userService;
+    }
 
     @Override
     public FilmModel save (FilmModel film) throws IOException {
@@ -61,6 +70,15 @@ public class FilmService implements IFilmService{
         String base64 = Base64.getEncoder().encodeToString(film.getImage());
 
         film.setBase64Image(base64);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String username = authentication.getName();
+
+        CustomUser user = userService.findUserByUsername(username).get();
+
+
+        film.setCustomUser(user);
 
         return filmRepository.save(film);
     }

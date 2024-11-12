@@ -302,4 +302,12 @@ public class FilmModel implements Response {
     public void setImage(byte[] image) {
         this.image = image;
     }
+
+    public CustomUser getCustomUser() {
+        return customUser;
+    }
+
+    public void setCustomUser(CustomUser customUser) {
+        this.customUser = customUser;
+    }
 }

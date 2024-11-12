@@ -34,7 +34,18 @@ public class DBInit {
         user.setCredentialNonExpired(true);
         user.setEnabled(true);
 
+        CustomUser user2 = new CustomUser();
+
+        user2.setUsername("test2");
+        user2.setPassword(passwordEncoder.encode("test"));
+        user2.setUserRole(UserRole.ADMIN);
+        user2.setAccountNonExpired(true);
+        user2.setAccountNonLocked(true);
+        user2.setCredentialNonExpired(true);
+        user2.setEnabled(true);
+
         userService.saveUser(user);
+        userService.saveUser(user2);
     }
 
 }
