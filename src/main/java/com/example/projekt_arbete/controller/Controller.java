@@ -1,14 +1,19 @@
 package com.example.projekt_arbete.controller;
 
+import com.example.projekt_arbete.model.CustomUser;
 import com.example.projekt_arbete.model.FilmModel;
 import com.example.projekt_arbete.response.ErrorResponse;
 import com.example.projekt_arbete.response.ListResponse;
 import com.example.projekt_arbete.response.Response;
 import com.example.projekt_arbete.service.IFilmService;
+import com.example.projekt_arbete.service.IUserService;
 import io.github.resilience4j.ratelimiter.RateLimiter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -39,13 +44,16 @@ public class Controller {
 
     private final RateLimiter rateLimiter;
 
-    public Controller (WebClient.Builder webClient, IFilmService filmService, RateLimiter rateLimiter) {
+    private final IUserService userService;
+
+    public Controller (WebClient.Builder webClient, IFilmService filmService, RateLimiter rateLimiter, IUserService userService) {
         this.webClientConfig = webClient
                 .baseUrl("https://api.themoviedb.org/3/")
                 .build();
         //this.filmRepository = repository;
         this.filmService = filmService;
         this.rateLimiter = rateLimiter;
+        this.userService = userService;
     }
 
     // TODO - Error handle this shit: internal server error 500 if no film is found - DONE?
@@ -97,17 +105,25 @@ public class Controller {
 
                 if (response.isPresent()) {
 
+                    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                    String username = authentication.getName();
+                    CustomUser currentUser = userService.findUserByUsername(username).get();
+                    List<FilmModel> usersFilms = currentUser.getFilmList();
+
                     List<FilmModel> allFilms = filmService.findAll();
 
-                    for (FilmModel film : allFilms) {
+
+                    for (FilmModel film : usersFilms) {
                         System.out.println("for each film.getId(): " + film.getId());
 
                         if (film.getId() == response.get().getId()) {
 
-                            return ResponseEntity.ok(new ErrorResponse("Filmen redan sparad :) "));
+                            return ResponseEntity.ok(new ErrorResponse("Du har filmen redan sparad :) "));
                         }
 
                     }
+
+
 
                     filmService.save(response.get());
 

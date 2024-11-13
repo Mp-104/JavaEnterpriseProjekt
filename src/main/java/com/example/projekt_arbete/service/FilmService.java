@@ -37,7 +37,7 @@ public class FilmService implements IFilmService{
     }
 
     @Override
-    public FilmModel save (FilmModel film) throws IOException {
+    public ResponseEntity<Response> save (FilmModel film) throws IOException {
 
         String poster = film.getPoster_path();
 
@@ -77,10 +77,50 @@ public class FilmService implements IFilmService{
 
         CustomUser user = userService.findUserByUsername(username).get();
 
+        System.out.println("film.getId: " + film.getId());
+        System.out.println("film.getfilmid: " + film.getFilmid());
+       // System.out.println("film.geCustomUser: " + film.getCustomUser());
+        //System.out.println("current film: " + filmRepository.findById(film.getId()).get().);
 
-        film.setCustomUser(user);
+        List<FilmModel> allFilms = filmRepository.findAll();
 
-        return filmRepository.save(film);
+        for (FilmModel film1 : allFilms) {
+
+            if (film1.getId() == film.getId()) {
+
+                FilmModel currentFilm = filmRepository.findByTitle(film.getTitle()).get();
+
+                //List<CustomUser> list = currentFilm.getCustomUser();
+
+                //list.add(user);
+
+                //currentFilm.setCustomUser(currentFilm.getCustomUser().add(user) );
+                //currentFilm.setCustomUser(list);
+
+                List<CustomUser> customUserList = currentFilm.getCustomUsers();
+                customUserList.add(user);
+                currentFilm.setCustomUsers(customUserList);
+
+                return ResponseEntity.ok(filmRepository.save(currentFilm));
+
+            }
+
+        }
+
+       // List<CustomUser> list = film.getCustomUser();
+        //list.add(user);
+
+        //film.setCustomUser(list);
+
+        //film.setCustomUser(user);
+        //film.getCustomUsers().add(user);
+        List<CustomUser> customUserList = new ArrayList<>();
+        customUserList.add(user);
+
+        film.setCustomUsers(customUserList);
+        return ResponseEntity.ok(filmRepository.save(film));
+        //return filmRepository.findById(film.getId()).get();
+
     }
 
     @Override
@@ -106,6 +146,11 @@ public class FilmService implements IFilmService{
             return ResponseEntity.status(500).body(new ErrorResponse("något fel"));
         }
 
+    }
+
+    @Override
+    public Optional<FilmModel> findFilmById(Integer id) {
+        return filmRepository.findById(id);
     }
 
     @Override

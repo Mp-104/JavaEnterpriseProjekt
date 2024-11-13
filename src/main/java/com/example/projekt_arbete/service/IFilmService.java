@@ -13,9 +13,11 @@ import java.util.Optional;
 
 //Declare relevant methods
 public interface IFilmService {
-    FilmModel save (FilmModel film) throws IOException;
+    ResponseEntity<Response> save (FilmModel film) throws IOException;
     List<FilmModel> findAll ();
     ResponseEntity<Response> findById (Integer id);
+
+    Optional<FilmModel> findFilmById(Integer id);
 
     Optional<FilmModel> getFilmById(Integer id);
 

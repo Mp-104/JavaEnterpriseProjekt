@@ -18,9 +18,25 @@ public class FilmModel implements Response {
     @Lob
     private String base64Image;
 
-    @ManyToOne
-    @JoinColumn(name = "custom_user_id")
-    private CustomUser customUser;
+//    @ManyToOne
+//    @JoinColumn(name = "custom_user_id")
+//    private CustomUser customUser;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_films",  // Join table name
+            joinColumns = @JoinColumn(name = "film_id"),  // Column for the film's ID
+            inverseJoinColumns = @JoinColumn(name = "user_id")  // Column for the user's ID
+    )
+    private List<CustomUser> customUsers;
+
+    public List<CustomUser> getCustomUsers() {
+        return customUsers;
+    }
+
+    public void setCustomUsers(List<CustomUser> customUsers) {
+        this.customUsers = customUsers;
+    }
 
     private boolean adult;
     private String backdropPath;
@@ -303,11 +319,11 @@ public class FilmModel implements Response {
         this.image = image;
     }
 
-    public CustomUser getCustomUser() {
-        return customUser;
-    }
-
-    public void setCustomUser(CustomUser customUser) {
-        this.customUser = customUser;
-    }
+//    public CustomUser getCustomUser() {
+//        return customUser;
+//    }
+//
+//    public void setCustomUser(CustomUser customUser) {
+//        this.customUser = customUser;
+//    }
 }

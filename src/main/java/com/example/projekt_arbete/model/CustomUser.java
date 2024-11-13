@@ -19,7 +19,10 @@ public class CustomUser {
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
-    @OneToMany(mappedBy = "customUser", cascade = CascadeType.ALL)
+//    @OneToMany(mappedBy = "customUser", cascade = CascadeType.ALL)
+//    private List<FilmModel> filmList;
+
+    @ManyToMany(mappedBy = "customUsers", cascade = CascadeType.ALL)
     private List<FilmModel> filmList;
 
     private boolean isAccountNonExpired;

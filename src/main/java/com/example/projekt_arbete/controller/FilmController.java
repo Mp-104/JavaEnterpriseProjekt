@@ -38,6 +38,7 @@ public class FilmController {
         //TODO - Showing films saved by logged in user
         //model.addAttribute("films", filmService.findAll());
         model.addAttribute("films", filmList);
+        model.addAttribute("username", username);
 
         return "index";
     }

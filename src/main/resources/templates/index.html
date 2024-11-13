@@ -7,6 +7,7 @@
 </head>
 <body>
 <h1>Film Hanterare</h1>
+<p>Välkommen <span th:text="${username}"></span></p>
 <div>
     <a href="/movies/savedfilms">Sparade filmer</a>
     <br>
@@ -14,7 +15,7 @@
     <br>
     <a href="/movies/info">Film info ARBETE PÅGÅR</a>
 </div>
-<h2>All Films</h2>
+<h2><span th:text="${username}"></span>'s filmer</h2>
 
 <div>
     <ul>
