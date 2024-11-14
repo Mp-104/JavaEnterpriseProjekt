@@ -17,8 +17,6 @@ public interface IFilmService {
     List<FilmModel> findAll ();
     ResponseEntity<Response> findById (Integer id);
 
-    Optional<FilmModel> findFilmById(Integer id);
-
     Optional<FilmModel> getFilmById(Integer id);
 
     ResponseEntity<String> deleteById (Integer id) throws Exception;

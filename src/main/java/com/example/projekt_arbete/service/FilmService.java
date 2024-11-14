@@ -149,11 +149,6 @@ public class FilmService implements IFilmService{
     }
 
     @Override
-    public Optional<FilmModel> findFilmById(Integer id) {
-        return filmRepository.findById(id);
-    }
-
-    @Override
     public Optional<FilmModel> getFilmById(Integer id) {
         return filmRepository.findById(id);
     }
