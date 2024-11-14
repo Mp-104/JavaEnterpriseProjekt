@@ -10,5 +10,6 @@ import java.util.Optional;
 public interface FilmRepository extends JpaRepository<FilmModel, Integer> {
 
     Optional<FilmModel> findByTitle (String title);
+    Optional<FilmModel> findByTitleIgnoreCase (String title);
 
 }

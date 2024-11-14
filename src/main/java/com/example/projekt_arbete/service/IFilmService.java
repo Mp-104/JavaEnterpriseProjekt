@@ -29,4 +29,8 @@ public interface IFilmService {
     ResponseEntity<String> addOpinion (Integer id, String opinion);
     ResponseEntity<Response> getFilmWithAdditionalInfo(int filmId, boolean opinion, boolean description);
     ResponseEntity<Response> getInfo();
+
+    Optional<FilmModel> findByTitle(String filmName);
+
+    Optional<FilmModel> findByTitleIgnoreCase(String filmName);
 }

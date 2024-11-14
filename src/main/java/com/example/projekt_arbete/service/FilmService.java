@@ -50,7 +50,7 @@ public class FilmService implements IFilmService{
         URLConnection connection = url.openConnection();
 
         connection.connect();
-
+        //TODO - Error handle if no image link present
         try (InputStream inputStream = connection.getInputStream();
              ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()
         ){
@@ -161,6 +161,7 @@ public class FilmService implements IFilmService{
     @Override
     public ResponseEntity<String> deleteById (Integer id) throws Exception {
 
+        // TODO - why this? Use in if statement perhaps
         Optional<FilmModel> optionalFilm = filmRepository.findById(id);
 
         try {
@@ -218,14 +219,21 @@ public class FilmService implements IFilmService{
                 return ResponseEntity.status(400).body(new ErrorResponse("Du måste skriva namn"));
             }
 
+            //filmRepository.findByTitleIgnoreCase(filmName.trim().toLowerCase());
+
             List<FilmModel> allFilms = filmRepository.findAll();
 
             for (FilmModel film : allFilms) {
                 //System.out.println(film.getOriginal_title());
 
-                if (film.getOriginal_title().equals(filmName)) {
+                if (film.getTitle().equals(filmName)) {
 
-                    return ResponseEntity.ok(film);
+                    FilmDTO filmDto = new FilmDTO();
+                    filmDto.setTitle(film.getTitle());
+                    filmDto.setId((long) film.getFilmid());
+
+
+                    return ResponseEntity.ok(filmDto);
                 }
             }
 
@@ -337,13 +345,13 @@ public class FilmService implements IFilmService{
             if (opinion == true && description == true) {
                 filmDTO.setDescription(film.getOverview());
                 filmDTO.setOpinion(film.getOpinion());
-                filmDTO.setTitle(film.getOriginal_title());
+                filmDTO.setTitle(film.getTitle());
 
                 return ResponseEntity.ok(filmDTO);
             }
 
             if (opinion == true) {
-                filmDTO.setTitle(film.getOriginal_title());
+                filmDTO.setTitle(film.getTitle());
                 filmDTO.setOpinion(film.getOpinion());
                 filmDTO.setDescription("inget här");
 
@@ -352,13 +360,13 @@ public class FilmService implements IFilmService{
             }
 
             if (description == true) {
-                filmDTO.setTitle(film.getOriginal_title());
+                filmDTO.setTitle(film.getTitle());
                 filmDTO.setDescription(film.getOverview());
                 filmDTO.setOpinion("inget här");
 
                 return ResponseEntity.ok(filmDTO);
             }
-            filmDTO.setTitle(film.getOriginal_title());
+            filmDTO.setTitle(film.getTitle());
             filmDTO.setDescription("inget här");
             filmDTO.setOpinion("inget här");
 
@@ -422,6 +430,19 @@ public class FilmService implements IFilmService{
         } catch (Exception e) {
             return ResponseEntity.status(500).body(new ErrorResponse("något fel"));
         }
+
+    }
+
+    @Override
+    public Optional<FilmModel> findByTitle(String filmName) {
+
+        return filmRepository.findByTitle(filmName);
+    }
+
+    @Override
+    public Optional<FilmModel> findByTitleIgnoreCase(String filmName) {
+
+        return filmRepository.findByTitleIgnoreCase(filmName);
     }
 
 

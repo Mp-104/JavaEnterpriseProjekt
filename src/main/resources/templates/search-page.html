@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Söka</title>
+</head>
+<body>
+
+    <h1>Söka film</h1>
+    <a href="/">Tillbaka</a>
+
+    <form th:action="@{/movies/search}" method="post">
+
+        <label>Sök film
+            <input type="text" name="filmName" th:value="${filmName}">
+        </label>
+        <button type="submit">Sök</button>
+
+    </form>
+
+    <div th:if="${error}">
+        <p th:text="${error}"></p>
+    </div>
+
+    <div th:if="${film != null}">
+        <p>Sökning för: <span th:text="${filmName}"></span></p>
+
+        <a th:href="@{/films/getfilm/{id}(id=${film.id})}"><span th:text="${film.title}">Title</span></a>
+
+    </div>
+
+
+
+</body>
+</html>
