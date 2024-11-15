@@ -1,9 +1,9 @@
 package com.example.projekt_arbete.service;
 
+import com.example.projekt_arbete.dao.IFilmDAO;
 import com.example.projekt_arbete.model.CustomUser;
 import com.example.projekt_arbete.model.FilmDTO;
 import com.example.projekt_arbete.model.FilmModel;
-import com.example.projekt_arbete.repository.FilmRepository;
 import com.example.projekt_arbete.response.ErrorResponse;
 import com.example.projekt_arbete.response.IntegerResponse;
 import com.example.projekt_arbete.response.ListResponse;
@@ -26,13 +26,15 @@ import java.util.*;
 public class FilmService implements IFilmService{
 
     //@Autowired
-    private final FilmRepository filmRepository;
+    //private final FilmRepository filmRepository;
+    private final IFilmDAO filmDao;
 
     private final IUserService userService;
 
     @Autowired
-    public FilmService (FilmRepository filmRepository, IUserService userService) {
-        this.filmRepository = filmRepository;
+    public FilmService (IFilmDAO filmDao, IUserService userService) {
+        //this.filmRepository = filmRepository;
+        this.filmDao = filmDao;
         this.userService = userService;
     }
 
@@ -82,13 +84,15 @@ public class FilmService implements IFilmService{
        // System.out.println("film.geCustomUser: " + film.getCustomUser());
         //System.out.println("current film: " + filmRepository.findById(film.getId()).get().);
 
-        List<FilmModel> allFilms = filmRepository.findAll();
+       // List<FilmModel> allFilms = filmRepository.findAll();
+        List<FilmModel> allFilms = filmDao.findAll();
 
         for (FilmModel film1 : allFilms) {
 
             if (film1.getId() == film.getId()) {
 
-                FilmModel currentFilm = filmRepository.findByTitle(film.getTitle()).get();
+                //FilmModel currentFilm = filmRepository.findByTitle(film.getTitle()).get();
+                FilmModel currentFilm = filmDao.findByTitle(film.getTitle()).get();
 
                 //List<CustomUser> list = currentFilm.getCustomUser();
 
@@ -101,7 +105,7 @@ public class FilmService implements IFilmService{
                 customUserList.add(user);
                 currentFilm.setCustomUsers(customUserList);
 
-                return ResponseEntity.ok(filmRepository.save(currentFilm));
+                return ResponseEntity.ok(filmDao.save(currentFilm));
 
             }
 
@@ -118,14 +122,14 @@ public class FilmService implements IFilmService{
         customUserList.add(user);
 
         film.setCustomUsers(customUserList);
-        return ResponseEntity.ok(filmRepository.save(film));
+        return ResponseEntity.ok(filmDao.save(film));
         //return filmRepository.findById(film.getId()).get();
 
     }
 
     @Override
     public List<FilmModel> findAll () {
-        return filmRepository.findAll();
+        return filmDao.findAll();
     }
 
     @Override
@@ -133,7 +137,7 @@ public class FilmService implements IFilmService{
 
         try {
 
-            Optional<FilmModel> optionalFilm = filmRepository.findById(id);
+            Optional<FilmModel> optionalFilm = filmDao.findById(id);
 
             if (optionalFilm.isPresent()) {
 
@@ -150,20 +154,20 @@ public class FilmService implements IFilmService{
 
     @Override
     public Optional<FilmModel> getFilmById(Integer id) {
-        return filmRepository.findById(id);
+        return filmDao.findById(id);
     }
 
     @Override
     public ResponseEntity<String> deleteById (Integer id) throws Exception {
 
         // TODO - why this? Use in if statement perhaps
-        Optional<FilmModel> optionalFilm = filmRepository.findById(id);
+        Optional<FilmModel> optionalFilm = filmDao.findById(id);
 
         try {
 
-            if (filmRepository.findById(id).isPresent()) {
+            if (filmDao.findById(id).isPresent()) {
 
-                filmRepository.deleteById(id);
+                filmDao.deleteById(id);
                 return ResponseEntity.ok("Film med id "+ id + " tagen borta");
 
             } else {
@@ -182,7 +186,7 @@ public class FilmService implements IFilmService{
 
         newCountryOfOrigins.add(country);
 
-        Optional<FilmModel> filmOptional = filmRepository.findById(id);
+        Optional<FilmModel> filmOptional = filmDao.findById(id);
 
         if (filmOptional.isEmpty()) {
             return ResponseEntity.status(404).body(new ErrorResponse("Film finns inte! <@:)"));
@@ -194,7 +198,7 @@ public class FilmService implements IFilmService{
 
             film.setOrigin_country(newCountryOfOrigins);
 
-            filmRepository.save(film);
+            filmDao.save(film);
 
             return ResponseEntity.ok(film);
 
@@ -216,7 +220,7 @@ public class FilmService implements IFilmService{
 
             //filmRepository.findByTitleIgnoreCase(filmName.trim().toLowerCase());
 
-            List<FilmModel> allFilms = filmRepository.findAll();
+            List<FilmModel> allFilms = filmDao.findAll();
 
             for (FilmModel film : allFilms) {
                 //System.out.println(film.getOriginal_title());
@@ -241,7 +245,7 @@ public class FilmService implements IFilmService{
     @Override
     public ResponseEntity<Response> getFilmByCountry (String country, String title) {
 
-        List<FilmModel> savedFilms = filmRepository.findAll();
+        List<FilmModel> savedFilms = filmDao.findAll();
 
         List<FilmModel> filmsByCountry = new ArrayList<>();
 
@@ -280,7 +284,7 @@ public class FilmService implements IFilmService{
 
         try {
 
-            List<FilmModel> films = filmRepository.findAll();
+            List<FilmModel> films = filmDao.findAll();
             if (films.isEmpty()) {
                 return ResponseEntity.status(404).body(new ErrorResponse("inga filmer sparade än"));
             }
@@ -293,7 +297,7 @@ public class FilmService implements IFilmService{
 
             }
 
-            return ResponseEntity.ok(new IntegerResponse(runtimeInMin / filmRepository.findAll().size()));
+            return ResponseEntity.ok(new IntegerResponse(runtimeInMin / filmDao.findAll().size()));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(new ErrorResponse("något fel"));
         }
@@ -307,12 +311,12 @@ public class FilmService implements IFilmService{
                 return ResponseEntity.status(400).body("måste ha body");
             }
 
-            Optional<FilmModel> optionalFilm = filmRepository.findById(id);
+            Optional<FilmModel> optionalFilm = filmDao.findById(id);
 
             if (optionalFilm.isPresent()) {
 
                 optionalFilm.get().setOpinion(opinion);
-                filmRepository.save(filmRepository.findById(id).get());
+                filmDao.save(filmDao.findById(id).get());
                 return ResponseEntity.status(201).body("Opinion adderad!");
 
             } else {
@@ -331,8 +335,8 @@ public class FilmService implements IFilmService{
         FilmDTO filmDTO = new FilmDTO();
         try {
 
-            if (filmRepository.findById(filmId).isPresent()) {
-                film = filmRepository.findById(filmId).get();
+            if (filmDao.findById(filmId).isPresent()) {
+                film = filmDao.findById(filmId).get();
             } else {
                 return ResponseEntity.status(404).body(new ErrorResponse("Film finns inte"));
             }
@@ -431,13 +435,13 @@ public class FilmService implements IFilmService{
     @Override
     public Optional<FilmModel> findByTitle(String filmName) {
 
-        return filmRepository.findByTitle(filmName);
+        return filmDao.findByTitle(filmName);
     }
 
     @Override
     public Optional<FilmModel> findByTitleIgnoreCase(String filmName) {
 
-        return filmRepository.findByTitleIgnoreCase(filmName);
+        return filmDao.findByTitleIgnoreCase(filmName);
     }
 
 

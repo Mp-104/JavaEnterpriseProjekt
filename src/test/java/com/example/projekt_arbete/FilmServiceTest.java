@@ -1,30 +1,23 @@
 package com.example.projekt_arbete;
 
+import com.example.projekt_arbete.dao.IFilmDAO;
 import com.example.projekt_arbete.model.CustomUser;
 import com.example.projekt_arbete.model.FilmDTO;
 import com.example.projekt_arbete.model.FilmModel;
-import com.example.projekt_arbete.repository.FilmRepository;
 import com.example.projekt_arbete.response.ErrorResponse;
 import com.example.projekt_arbete.response.IntegerResponse;
 import com.example.projekt_arbete.response.Response;
 import com.example.projekt_arbete.service.FilmService;
-import com.example.projekt_arbete.service.IUserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.http.ResponseEntity;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -36,11 +29,12 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class FilmServiceTest {
 
-    @Mock
-    private FilmRepository filmRepository;
+    //@Mock
+    //private FilmRepository filmRepository;
 
     @Mock
-    private IUserService userService;
+    private IFilmDAO filmDao;
+
 
     @InjectMocks
     private FilmService filmService;
@@ -61,7 +55,7 @@ public class FilmServiceTest {
         mockFilm.setBudget(1000000);
         mockFilm.setPoster_path("/22wNUqKyz2m6wzAt31f26H8Y433.jpg");
 
-        filmRepository.save(mockFilm);
+        filmDao.save(mockFilm);
 
         mockUser = new CustomUser();
         mockUser.setUsername("testuser");
@@ -98,7 +92,7 @@ public class FilmServiceTest {
     @Test
     public void testGetFilmByIdFound() {
 
-        when(filmRepository.findById(1)).thenReturn(Optional.of(mockFilm));
+        when(filmDao.findById(1)).thenReturn(Optional.of(mockFilm));
 
         ResponseEntity<Response> response = filmService.findById(1);
 
@@ -109,7 +103,7 @@ public class FilmServiceTest {
     @Test
     public void testGetFilmByIdNotFound() {
 
-        when(filmRepository.findById(999)).thenReturn(Optional.empty());
+        when(filmDao.findById(999)).thenReturn(Optional.empty());
 
         ResponseEntity<Response> response = filmService.findById(999);
 
@@ -121,7 +115,7 @@ public class FilmServiceTest {
     public void testDeleteByIDSuccess () throws Exception {
 
         Integer filmId = 1;
-        when(filmRepository.findById(filmId)).thenReturn(Optional.of(mockFilm)); // Film exists
+        when(filmDao.findById(filmId)).thenReturn(Optional.of(mockFilm)); // Film exists
 
         // Act
         ResponseEntity<String> response = filmService.deleteById(filmId);
@@ -131,14 +125,14 @@ public class FilmServiceTest {
         assertEquals("Film med id 1 tagen borta", response.getBody(), "The response body should contain the success message");
 
         // Verify that deleteById was called once
-        verify(filmRepository, times(1)).deleteById(filmId);
+        verify(filmDao, times(1)).deleteById(filmId);
     }
 
     @Test
     public void testDeleteByIdFail () throws Exception {
 
         Integer filmId = 2;
-        when(filmRepository.findById(filmId)).thenReturn(Optional.empty());
+        when(filmDao.findById(filmId)).thenReturn(Optional.empty());
 
         ResponseEntity<String> response = filmService.deleteById(filmId);
 
@@ -146,15 +140,15 @@ public class FilmServiceTest {
         assertEquals("no film found with id: 2", response.getBody(), "The response body should contain the error message");
 
         // Verify that deleteById was never called because filmId did not match
-        verify(filmRepository, never()).deleteById(filmId);
+        verify(filmDao, never()).deleteById(filmId);
     }
 
     @Test
     public void testDeleteByIdException () throws Exception {
 
         Integer filmId = 1;
-        when(filmRepository.findById(filmId)).thenReturn(Optional.of(mockFilm));
-        doThrow(new RuntimeException("Database error")).when(filmRepository).deleteById(filmId); // exception
+        when(filmDao.findById(filmId)).thenReturn(Optional.of(mockFilm));
+        doThrow(new RuntimeException("Database error")).when(filmDao).deleteById(filmId); // exception
 
         assertThrows(Exception.class, () -> {
             filmService.deleteById(filmId); // should throw an exception due to the error in deleteById
@@ -163,12 +157,12 @@ public class FilmServiceTest {
 
     @Test
     public void testChangeCountryOfOrigin () {
-        when(filmRepository.findById(1)).thenReturn(Optional.of(mockFilm));
+        when(filmDao.findById(1)).thenReturn(Optional.of(mockFilm));
 
         ResponseEntity<Response> response = filmService.changeCountryOfOrigin(1, "SE");
 
         assertEquals(200, response.getStatusCodeValue(), "should be 200 ");
-        assertEquals("SE", filmRepository.findById(1).get().getOrigin_country().get(0) );
+        assertEquals("SE", filmDao.findById(1).get().getOrigin_country().get(0) );
         assertTrue(response.getBody() instanceof FilmModel, "Response body should be a FilmModel");
     }
 
@@ -176,9 +170,9 @@ public class FilmServiceTest {
     @MockitoSettings(strictness = Strictness.LENIENT)
     public void testSearchFilmByNameFound () {
 
-        when(filmRepository.findAll()).thenReturn(Arrays.asList(mockFilm));
+        when(filmDao.findAll()).thenReturn(Arrays.asList(mockFilm));
 
-        when(filmRepository.findByTitle("Test Film")).thenReturn(Optional.of(mockFilm));
+        when(filmDao.findByTitle("Test Film")).thenReturn(Optional.of(mockFilm));
 
         ResponseEntity<Response> response = filmService.searchFilmByName("Test Film");
 
@@ -190,7 +184,7 @@ public class FilmServiceTest {
     @MockitoSettings(strictness = Strictness.LENIENT)
     public void testSearchFilmByNameNotFound () {
 
-        when(filmRepository.findByTitle("Nonexistent Film")).thenReturn(Optional.empty());
+        when(filmDao.findByTitle("Nonexistent Film")).thenReturn(Optional.empty());
 
         ResponseEntity<Response> response = filmService.searchFilmByName("Nonexistent Film");
 
@@ -202,7 +196,7 @@ public class FilmServiceTest {
     public void testGetFilmByCountry () {
 
         List<FilmModel> films = Arrays.asList(mockFilm);
-        when(filmRepository.findAll()).thenReturn(films);
+        when(filmDao.findAll()).thenReturn(films);
 
         ResponseEntity<Response> response = filmService.getFilmByCountry("US", "Test Film");
 
@@ -215,7 +209,7 @@ public class FilmServiceTest {
     public void testGetFilmByCountryNotFound () {
 
         List<FilmModel> films = Arrays.asList(mockFilm);
-        when(filmRepository.findAll()).thenReturn(films);
+        when(filmDao.findAll()).thenReturn(films);
 
         ResponseEntity<Response> response = filmService.getFilmByCountry("SE", "Test Film");
 
@@ -226,12 +220,12 @@ public class FilmServiceTest {
     @Test
     public void testAddOpinion () {
 
-        when(filmRepository.findById(1)).thenReturn(Optional.of(mockFilm));
+        when(filmDao.findById(1)).thenReturn(Optional.of(mockFilm));
 
         ResponseEntity<String> response = filmService.addOpinion(1, "bra film!");
 
         assertEquals(201, response.getStatusCodeValue(), "Status code should be 201 Created");
-        assertEquals("bra film!", filmRepository.findById(1).get().getOpinion());
+        assertEquals("bra film!", filmDao.findById(1).get().getOpinion());
         assertEquals("Opinion adderad!", response.getBody(), "Response body should be 'Opinion adderad!'");
     }
 
@@ -239,7 +233,7 @@ public class FilmServiceTest {
     public void testGetAverageRuntime () {
 
         List<FilmModel> films = Arrays.asList(mockFilm);
-        when(filmRepository.findAll()).thenReturn(films);
+        when(filmDao.findAll()).thenReturn(films);
 
         ResponseEntity<Response> response = filmService.getAverageRuntime();
         assertEquals(200, response.getStatusCodeValue(), "Status code should be 200 OK");
