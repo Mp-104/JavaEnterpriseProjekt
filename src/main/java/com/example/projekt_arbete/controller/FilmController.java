@@ -1,11 +1,13 @@
 package com.example.projekt_arbete.controller;
 
+import com.example.projekt_arbete.config.WebClientConfig;
 import com.example.projekt_arbete.model.CustomUser;
 import com.example.projekt_arbete.model.FilmDTO;
 import com.example.projekt_arbete.model.FilmModel;
 import com.example.projekt_arbete.response.Response;
 import com.example.projekt_arbete.service.IFilmService;
 import com.example.projekt_arbete.service.IUserService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,19 +16,28 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class FilmController {
 
+    @Value("${ApiKey}")
+    private String ApiKey;
+
     private final IFilmService filmService;
     private final IUserService userService;
+    private final WebClient webClient;
 
-    public FilmController (IFilmService filmService, IUserService userService) {
+    public FilmController (IFilmService filmService, IUserService userService, WebClient.Builder webClientBuilder) {
         this.filmService = filmService;
         this.userService = userService;
+        this.webClient = webClientBuilder
+                .baseUrl("https://api.themoviedb.org/3/")
+                .build();
     }
 
     @GetMapping("/")
@@ -114,6 +125,53 @@ public class FilmController {
 
 
         return "search-page";
+    }
+
+    @GetMapping("/movies/searchid")
+    public String searchIdPage () {
+
+        return "searchid-page";
+    }
+
+    @PostMapping("/movies/searchid")
+    public String search (@RequestParam("filmId") String filmId, Model model) {
+
+        System.out.println("in postMapping for searchid");
+
+        // TODO - this does not work..
+       /* FilmModel film = webClient.get()
+                .uri(path -> path
+                        .path("/" + filmId)
+                        .build())
+                .retrieve()
+                .bodyToMono(FilmModel.class)
+                .block();
+
+        System.out.println("filmId: " + filmId);*/
+
+
+        //System.out.println("film.getTitle: " + film.getTitle());
+
+        //TODO - but this does work.. find out more
+        String movie = "movie";
+
+        Optional<FilmModel> response = Optional.ofNullable(webClient.get()
+                .uri(film -> film
+                        .path(movie + "/" + filmId)
+                        .queryParam("api_key", ApiKey)
+                        .build())
+                .retrieve()
+                .bodyToMono(FilmModel.class)
+                .block());
+
+        FilmModel film = response.get();
+
+
+
+
+        model.addAttribute("film", film);
+
+        return "film-details";
     }
 
 }
