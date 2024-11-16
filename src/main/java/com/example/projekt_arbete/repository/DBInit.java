@@ -38,7 +38,7 @@ public class DBInit {
 
         user2.setUsername("test2");
         user2.setPassword(passwordEncoder.encode("test"));
-        user2.setUserRole(UserRole.ADMIN);
+        user2.setUserRole(UserRole.USER);
         user2.setAccountNonExpired(true);
         user2.setAccountNonLocked(true);
         user2.setCredentialNonExpired(true);

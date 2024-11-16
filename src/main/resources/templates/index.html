@@ -1,5 +1,5 @@
  <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+ <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,6 +16,12 @@
     <a href="/movies/info">Film info ARBETE PÅGÅR</a>
     <br>
     <a href="/movies/searchid">Sök film på id ARBETE PÅGÅR</a>
+    <br>
+
+    <div sec:authorize="hasRole('ROLE_ADMIN')">
+        <a href="/admin">Till admin sidan</a>
+    </div>
+
 </div>
 <h2><span th:text="${username}"></span>'s filmer</h2>
 
