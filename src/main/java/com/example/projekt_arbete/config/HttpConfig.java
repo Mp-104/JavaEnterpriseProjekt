@@ -1,4 +1,4 @@
-package com.example.projekt_arbete.config;
+/*package com.example.projekt_arbete.config;
 
 import org.apache.catalina.connector.Connector;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -23,4 +23,4 @@ public class HttpConfig {
 
         return factory -> factory.addAdditionalTomcatConnectors(createHttpConnector());
     }
-}
+}*/

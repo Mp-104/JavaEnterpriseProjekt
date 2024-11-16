@@ -8,6 +8,7 @@ import com.example.projekt_arbete.response.Response;
 import com.example.projekt_arbete.service.IFilmService;
 import com.example.projekt_arbete.service.IUserService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,7 +17,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.Base64;
 import java.util.List;
@@ -36,7 +39,8 @@ public class FilmController {
         this.filmService = filmService;
         this.userService = userService;
         this.webClient = webClientBuilder
-                .baseUrl("https://api.themoviedb.org/3/")
+                .baseUrl("http://localhost:8080/films/")
+                .defaultHeader("username", "test", "st")
                 .build();
     }
 
@@ -138,22 +142,48 @@ public class FilmController {
 
         System.out.println("in postMapping for searchid");
 
-        // TODO - this does not work..
-       /* FilmModel film = webClient.get()
-                .uri(path -> path
-                        .path("/" + filmId)
-                        .build())
+        // TODO - plenty! Check the username and password, and change to https, also error handle
+
+        // retrieving the session cookie, "JSESSIONID" after a log in with hard coded username and password
+        FilmModel film = webClient.post()
+                .uri("https://localhost:8443/login")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(BodyInserters.fromFormData("username", "test")
+                        .with("password", "test"))
+                .exchangeToMono(response -> {
+                    if (response.statusCode().is3xxRedirection() || response.statusCode().is2xxSuccessful()) {
+                        String sessionCookie = response.cookies().getFirst("JSESSIONID").getValue();
+                        return Mono.just(sessionCookie);
+                    } else {
+                        return Mono.error(new RuntimeException("Gick inte att autentisera"));
+                    }
+                })
+                // using the retrieved session cookie and passing it on into the header
+                .flatMap(sessionCookie -> webClient.get()
+                        .uri("https://localhost:8443/films/" + filmId)
+                        .header("Cookie", "JSESSIONID=" + sessionCookie)
+                        .retrieve()
+                        .bodyToMono(FilmModel.class)
+                )
+                .block();
+
+        // TODO - this does not work.. because the requests gets blocked due to authentication requirements
+        /*FilmModel film = webClient.get()
+                .uri(filmId)
                 .retrieve()
                 .bodyToMono(FilmModel.class)
                 .block();
 
-        System.out.println("filmId: " + filmId);*/
+        System.out.println(film);*/
+
+
+        System.out.println("filmId: " + filmId);
 
 
         //System.out.println("film.getTitle: " + film.getTitle());
 
-        //TODO - but this does work.. find out more
-        String movie = "movie";
+        //TODO - but this does work.. find out more -> calls an external endpoint, with a valid api key
+        /*String movie = "movie";
 
         Optional<FilmModel> response = Optional.ofNullable(webClient.get()
                 .uri(film -> film
@@ -164,7 +194,7 @@ public class FilmController {
                 .bodyToMono(FilmModel.class)
                 .block());
 
-        FilmModel film = response.get();
+        FilmModel film = response.get();*/
 
 
 

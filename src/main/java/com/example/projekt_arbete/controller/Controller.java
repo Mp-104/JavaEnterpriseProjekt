@@ -62,10 +62,12 @@ public class Controller {
 
         try {
             if (rateLimiter.acquirePermission()) {
+                System.out.println("in getFilmbyId of RestController");
 
-                Optional<FilmModel> response = Optional.ofNullable(webClientConfig.get()
+                Optional<FilmModel> response = Optional.ofNullable(webClientConfig
+                        .get()
                         .uri(film -> film
-                                .path(movie + "/" + id)
+                                .path( movie + "/" + id)
                                 .queryParam("api_key", ApiKey)
                                 .build())
                         .retrieve()
