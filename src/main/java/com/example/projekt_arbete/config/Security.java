@@ -16,10 +16,17 @@ import org.springframework.stereotype.Component;
 import io.github.resilience4j.ratelimiter.RateLimiter;
 
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 //@EnableWebSecurity
 @Configuration
 public class Security {
+
+    private final CustomUserDetailService customUserDetailService;
+
+    public Security (CustomUserDetailService customUserDetailService) {
+        this.customUserDetailService = customUserDetailService;
+    }
 
 
     @Bean
@@ -32,7 +39,12 @@ public class Security {
                             .requestMatchers("/admin").hasRole(UserRole.ADMIN.toString())
                             .anyRequest().authenticated())
                 .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer
-                        .loginPage("/login").permitAll());
+                        .loginPage("/login").permitAll())
+                .rememberMe(httpSecurityRememberMeConfigurer -> httpSecurityRememberMeConfigurer
+                        .rememberMeParameter("remember-me")
+                        .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(20))
+                        .key("appSecureKey")
+                        .userDetailsService(customUserDetailService));
 
         return http.build();
 

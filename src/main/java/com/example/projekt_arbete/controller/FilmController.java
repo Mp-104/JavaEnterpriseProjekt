@@ -10,6 +10,7 @@ import com.example.projekt_arbete.service.IUserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -28,8 +29,11 @@ import java.util.Optional;
 @Controller
 public class FilmController {
 
-    @Value("${ApiKey}")
-    private String ApiKey;
+    @Value("${app.username}")
+    private String username;
+
+    @Value("${app.password}")
+    private String password;
 
     private final IFilmService filmService;
     private final IUserService userService;
@@ -147,31 +151,41 @@ public class FilmController {
     public String search (@RequestParam("filmId") String filmId, Model model) {
 
         System.out.println("in postMapping for searchid");
+        System.out.println("username: " + username);
+        System.out.println("password: " + password);
 
         // TODO - plenty! Check the username and password, and change to https, also error handle
+        FilmModel film;
 
-        // retrieving the session cookie, "JSESSIONID" after a log in with hard coded username and password
-        FilmModel film = webClient.post()
-                .uri("https://localhost:8443/login")
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body(BodyInserters.fromFormData("username", "test")
-                        .with("password", "test"))
-                .exchangeToMono(response -> {
-                    if (response.statusCode().is3xxRedirection() || response.statusCode().is2xxSuccessful()) {
-                        String sessionCookie = response.cookies().getFirst("JSESSIONID").getValue();
-                        return Mono.just(sessionCookie);
-                    } else {
-                        return Mono.error(new RuntimeException("Gick inte att autentisera"));
-                    }
-                })
-                // using the retrieved session cookie and passing it on into the header
-                .flatMap(sessionCookie -> webClient.get()
-                        .uri("https://localhost:8443/films/" + filmId)
-                        .header("Cookie", "JSESSIONID=" + sessionCookie)
-                        .retrieve()
-                        .bodyToMono(FilmModel.class)
-                )
-                .block();
+        try {
+            // retrieving the session cookie, "JSESSIONID" after a log in with hard coded username and password
+             film = webClient.post()
+                    .uri("https://localhost:8443/login")
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .body(BodyInserters.fromFormData("username", username)
+                            .with("password", password))
+                    .exchangeToMono(response -> {
+                        if (response.statusCode().is3xxRedirection() || response.statusCode().is2xxSuccessful()) {
+                            String sessionCookie = response.cookies().getFirst("JSESSIONID").getValue();
+                            return Mono.just(sessionCookie);
+                        } else {
+                            return Mono.error(new RuntimeException("Gick inte att autentisera"));
+                        }
+                    })
+                    // using the retrieved session cookie and passing it on into the header
+                    .flatMap(sessionCookie -> webClient.get()
+                            .uri("https://localhost:8443/films/" + filmId)
+                            .header("Cookie", "JSESSIONID=" + sessionCookie)
+                            .retrieve()
+                            .bodyToMono(FilmModel.class)
+                    )
+                    .block();
+
+        } catch (Exception e) {
+
+            model.addAttribute("error", "ingen film med id: " + filmId);
+            return "searchid-page";
+        }
 
         // TODO - this does not work.. because the requests gets blocked due to authentication requirements
         /*FilmModel film = webClient.get()
@@ -184,6 +198,7 @@ public class FilmController {
 
 
         System.out.println("filmId: " + filmId);
+
 
 
         //System.out.println("film.getTitle: " + film.getTitle());
