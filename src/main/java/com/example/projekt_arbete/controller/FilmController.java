@@ -229,6 +229,7 @@ public class FilmController {
     @PostMapping("/movies/getfilm")
     public String getFilm (@ModelAttribute FilmModel film, Model model) {
 
+        //TODO - go to searchid-page.html to include more film parameters, or consider using a DTO..
         System.out.println("film.title: " + film.getTitle());
         System.out.println("film.id: " + film.getId());
         System.out.println("film.poster_path: " + film.getPoster_path());
@@ -240,6 +241,50 @@ public class FilmController {
 
     }
 
+
+    @PostMapping("/movies/savefilm")
+    public String saveFilm (@ModelAttribute FilmModel filmModel, Model model) {
+
+        FilmModel film;
+
+        String filmId = String.valueOf(filmModel.getId());
+
+        try {
+            // retrieving the session cookie, "JSESSIONID" after a log in with hard coded username and password
+            film = webClient.post()
+                    .uri("https://localhost:8443/login")
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .body(BodyInserters.fromFormData("username", username)
+                            .with("password", password))
+                    .exchangeToMono(response -> {
+                        if (response.statusCode().is3xxRedirection() || response.statusCode().is2xxSuccessful()) {
+                            String sessionCookie = response.cookies().getFirst("JSESSIONID").getValue();
+                            return Mono.just(sessionCookie);
+                        } else {
+                            return Mono.error(new RuntimeException("Gick inte att autentisera"));
+                        }
+                    })
+                    // using the retrieved session cookie and passing it on into the header
+                    .flatMap(sessionCookie -> webClient.post()
+                            .uri(filmId)
+                            .header("Cookie", "JSESSIONID=" + sessionCookie)
+                            .retrieve()
+                            .bodyToMono(FilmModel.class)
+                    )
+                    .block();
+
+        } catch (Exception e) {
+
+            model.addAttribute("error", "ingen film med id: " + filmId);
+            return "searchid-page";
+        }
+
+        //TODO - dedicated page to show a film has been successfully saved,
+        // TODO- handle if film is already saved..
+
+        model.addAttribute("film", film);
+        return "film-details";
+    }
 
 
 }
