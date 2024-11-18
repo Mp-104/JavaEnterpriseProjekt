@@ -5,10 +5,17 @@
 </head>
 <body>
     <h1>Film sida</h1>
-
+    <a href="/">Tillbaka</a>
 
     <div th:if="${film}">
         <p><strong>Title:</strong> <span th:text="${film.title}"></span></p>
+
+        <form th:action="@{/films/{id}(id=${film.id})}" method="post">
+                <button type="submit">Lägg till film</button>
+        </form>
+
+        <p><strong>Poster patt:</strong> <span th:text="${film.poster_path}"></span></p>
+        <img th:src="'https://image.tmdb.org/t/p/original/' + ${film.poster_path}">
 
     </div>
 

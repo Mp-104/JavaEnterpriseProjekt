@@ -20,5 +20,22 @@
         <p th:text="${error}"></p>
     </div>
 
+    <div th:if="${film}">
+
+        <form th:action="@{/movies/getfilm}" th:object="${film}" method="post">
+
+            <input type="hidden" th:field="*{id}" />
+            <input type="hidden" th:field="*{title}" />
+            <input type="hidden" th:field="*{poster_path}" />
+
+
+            <p th:text="${film.title}"></p>
+            <button type="submit">Se detaljer</button>
+        </form>
+
+
+
+    </div>
+
 </body>
 </html>

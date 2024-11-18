@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -43,8 +44,7 @@ public class FilmController {
         this.filmService = filmService;
         this.userService = userService;
         this.webClient = webClientBuilder
-                .baseUrl("http://localhost:8080/films/")
-                .defaultHeader("username", "test", "st")
+                .baseUrl("https://localhost:8443/films/")
                 .build();
     }
 
@@ -174,7 +174,7 @@ public class FilmController {
                     })
                     // using the retrieved session cookie and passing it on into the header
                     .flatMap(sessionCookie -> webClient.get()
-                            .uri("https://localhost:8443/films/" + filmId)
+                            .uri(filmId)
                             .header("Cookie", "JSESSIONID=" + sessionCookie)
                             .retrieve()
                             .bodyToMono(FilmModel.class)
@@ -222,7 +222,24 @@ public class FilmController {
 
         model.addAttribute("film", film);
 
-        return "film-details";
+        //return "film-details";
+        return "searchid-page";
     }
+
+    @PostMapping("/movies/getfilm")
+    public String getFilm (@ModelAttribute FilmModel film, Model model) {
+
+        System.out.println("film.title: " + film.getTitle());
+        System.out.println("film.id: " + film.getId());
+        System.out.println("film.poster_path: " + film.getPoster_path());
+
+
+
+        model.addAttribute("film", film);
+        return "film-details";
+
+    }
+
+
 
 }
