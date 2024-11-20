@@ -5,6 +5,7 @@ import com.example.projekt_arbete.response.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -13,6 +14,12 @@ import java.util.Optional;
 
 //Declare relevant methods
 public interface IFilmService {
+    //ResponseEntity<Response> getFilmById(@RequestParam(defaultValue = "movie") String movie, @PathVariable int id);
+
+    ResponseEntity<Response> getFilmById(int id);
+
+    ResponseEntity<Response> saveFilmById(@RequestParam(defaultValue = "movie") String movie, @PathVariable int id);
+
     ResponseEntity<Response> save (FilmModel film) throws IOException;
     List<FilmModel> findAll ();
     ResponseEntity<Response> findById (Integer id);

@@ -60,32 +60,7 @@ public class Controller {
     @GetMapping("/{id}")
     public ResponseEntity<Response> getFilmById (@RequestParam(defaultValue = "movie") String movie, @PathVariable int id) {
 
-        try {
-            if (rateLimiter.acquirePermission()) {
-                System.out.println("in getFilmbyId of RestController");
-
-                Optional<FilmModel> response = Optional.ofNullable(webClientConfig
-                        .get()
-                        .uri(film -> film
-                                .path( movie + "/" + id)
-                                .queryParam("api_key", ApiKey)
-                                .build())
-                        .retrieve()
-                        .bodyToMono(FilmModel.class)
-                        .block());
-
-                if (response.isPresent()) {
-                    return ResponseEntity.ok(response.get());
-                }
-
-                return ResponseEntity.status(404).body(new ErrorResponse("Ingen sån film"));
-            } else {
-                return ResponseEntity.status(429).body(new ErrorResponse("för mycket förfråga"));
-            }
-
-        } catch (WebClientResponseException e) {
-            return ResponseEntity.status(404).body(new ErrorResponse("Ingen sån film"));
-        }
+       return filmService.getFilmById( id);
 
     }
 
@@ -250,7 +225,7 @@ public class Controller {
     }
 
     @GetMapping("/image/{id}")
-    private ResponseEntity<byte[]> seeImage (@PathVariable int id) throws IOException {
+    private ResponseEntity<byte[]> seeImage (@PathVariable Integer id) throws IOException {
         FilmModel film = filmService.getFilmById(id).get();
 
         String poster = film.getPoster_path();

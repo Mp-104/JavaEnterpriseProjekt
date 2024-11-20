@@ -7,12 +7,15 @@ import com.example.projekt_arbete.model.FilmModel;
 import com.example.projekt_arbete.response.Response;
 import com.example.projekt_arbete.service.IFilmService;
 import com.example.projekt_arbete.service.IUserService;
+import org.antlr.v4.runtime.misc.Pair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,9 +26,8 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
+import java.io.IOException;
+import java.util.*;
 
 @Controller
 public class FilmController {
@@ -45,6 +47,10 @@ public class FilmController {
         this.userService = userService;
         this.webClient = webClientBuilder
                 .baseUrl("https://localhost:8443/films/")
+                .filter((request, next) -> {
+                    System.out.println("Request Headers: " + request.headers());
+                    return next.exchange(request);
+                })
                 .build();
     }
 
@@ -147,6 +153,7 @@ public class FilmController {
         return "searchid-page";
     }
 
+
     @PostMapping("/movies/searchid")
     public String search (@RequestParam("filmId") String filmId, Model model) {
 
@@ -155,31 +162,20 @@ public class FilmController {
         System.out.println("password: " + password);
 
         // TODO - plenty! Check the username and password, and change to https, also error handle
-        FilmModel film;
+        FilmModel film1 = null;
 
         try {
             // retrieving the session cookie, "JSESSIONID" after a log in with hard coded username and password
-             film = webClient.post()
-                    .uri("https://localhost:8443/login")
-                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                    .body(BodyInserters.fromFormData("username", username)
-                            .with("password", password))
-                    .exchangeToMono(response -> {
-                        if (response.statusCode().is3xxRedirection() || response.statusCode().is2xxSuccessful()) {
-                            String sessionCookie = response.cookies().getFirst("JSESSIONID").getValue();
-                            return Mono.just(sessionCookie);
-                        } else {
-                            return Mono.error(new RuntimeException("Gick inte att autentisera"));
-                        }
-                    })
-                    // using the retrieved session cookie and passing it on into the header
-                    .flatMap(sessionCookie -> webClient.get()
-                            .uri(filmId)
-                            .header("Cookie", "JSESSIONID=" + sessionCookie)
-                            .retrieve()
-                            .bodyToMono(FilmModel.class)
-                    )
-                    .block();
+            ResponseEntity<Response> response = filmService.getFilmById(Integer.parseInt(filmId));
+
+            if (response.getBody() instanceof FilmModel) {
+                film1 = (FilmModel) response.getBody();
+
+            } else {
+
+                model.addAttribute("error", "ingen film med id: " + filmId);
+                return "searchid-page";
+            }
 
         } catch (Exception e) {
 
@@ -187,40 +183,9 @@ public class FilmController {
             return "searchid-page";
         }
 
-        // TODO - this does not work.. because the requests gets blocked due to authentication requirements
-        /*FilmModel film = webClient.get()
-                .uri(filmId)
-                .retrieve()
-                .bodyToMono(FilmModel.class)
-                .block();
-
-        System.out.println(film);*/
-
-
         System.out.println("filmId: " + filmId);
 
-
-
-        //System.out.println("film.getTitle: " + film.getTitle());
-
-        //TODO - but this does work.. find out more -> calls an external endpoint, with a valid api key
-        /*String movie = "movie";
-
-        Optional<FilmModel> response = Optional.ofNullable(webClient.get()
-                .uri(film -> film
-                        .path(movie + "/" + filmId)
-                        .queryParam("api_key", ApiKey)
-                        .build())
-                .retrieve()
-                .bodyToMono(FilmModel.class)
-                .block());
-
-        FilmModel film = response.get();*/
-
-
-
-
-        model.addAttribute("film", film);
+        model.addAttribute("film", film1);
 
         //return "film-details";
         return "searchid-page";
@@ -234,7 +199,16 @@ public class FilmController {
         System.out.println("film.id: " + film.getId());
         System.out.println("film.poster_path: " + film.getPoster_path());
 
+        List<FilmModel> userFilms = userService.findUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName()).get().getFilmList();
 
+        for (FilmModel filmModel : userFilms) {
+
+            if (Objects.equals(filmModel.getTitle(), film.getTitle())) {
+
+                model.addAttribute("saved", "filmen är redan sparad");
+            }
+
+        }
 
         model.addAttribute("film", film);
         return "film-details";
@@ -243,35 +217,25 @@ public class FilmController {
 
 
     @PostMapping("/movies/savefilm")
-    public String saveFilm (@ModelAttribute FilmModel filmModel, Model model) {
+    public String saveFilm (@ModelAttribute FilmModel filmModel, Model model) throws IOException {
 
-        FilmModel film;
+        //FilmModel film;
 
-        String filmId = String.valueOf(filmModel.getId());
+        int filmId = filmModel.getId();
+        //ResponseEntity response1 = filmService.save(filmModel);
 
         try {
-            // retrieving the session cookie, "JSESSIONID" after a log in with hard coded username and password
-            film = webClient.post()
-                    .uri("https://localhost:8443/login")
-                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                    .body(BodyInserters.fromFormData("username", username)
-                            .with("password", password))
-                    .exchangeToMono(response -> {
-                        if (response.statusCode().is3xxRedirection() || response.statusCode().is2xxSuccessful()) {
-                            String sessionCookie = response.cookies().getFirst("JSESSIONID").getValue();
-                            return Mono.just(sessionCookie);
-                        } else {
-                            return Mono.error(new RuntimeException("Gick inte att autentisera"));
-                        }
-                    })
-                    // using the retrieved session cookie and passing it on into the header
-                    .flatMap(sessionCookie -> webClient.post()
-                            .uri(filmId)
-                            .header("Cookie", "JSESSIONID=" + sessionCookie)
-                            .retrieve()
-                            .bodyToMono(FilmModel.class)
-                    )
-                    .block();
+
+            if (filmService.getFilmById( filmId).getBody() instanceof FilmModel) {
+
+                filmService.saveFilmById("movie", filmId);
+
+            } else {
+
+                model.addAttribute("error", "ingen film med id: " + filmId);
+                return "searchid-page";
+            }
+
 
         } catch (Exception e) {
 
@@ -279,11 +243,8 @@ public class FilmController {
             return "searchid-page";
         }
 
-        //TODO - dedicated page to show a film has been successfully saved,
-        // TODO- handle if film is already saved..
-
-        model.addAttribute("film", film);
-        return "film-details";
+        //model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
+        return "redirect:/";
     }
 
 
