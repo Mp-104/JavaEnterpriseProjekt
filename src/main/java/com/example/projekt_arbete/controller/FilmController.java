@@ -135,12 +135,6 @@ public class FilmController {
         return "search-page";
     }
 
-    @GetMapping("/admin")
-    public String adminPage () {
-
-        return "admin-page";
-    }
-
     @GetMapping("/movies/searchid")
     public String searchIdPage () {
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Admin sida</title>
@@ -8,6 +8,30 @@
     <h1>Admin sida Under påbyggnad</h1>
 
     <a href="/">Till hanterar film sida</a>
+
+    <br/>
+    <div>
+        <ul>
+            <li th:each="user : ${users}">
+
+
+                <span th:text="${user.id}"></span> <span th:text="${user.username}"></span>
+
+                <form th:action="@{/delete}" method="post">
+                    <input type="hidden" name="id" th:value="${user.id}" />
+                    <button type="submit">Ta bort användare</button>
+                </form>
+
+            </li>
+
+        </ul>
+    </div>
+
+    <br/>
+
+    <div th:if="${error}">
+        <p th:text="${error}"></p>
+    </div>
 
 </body>
 </html>

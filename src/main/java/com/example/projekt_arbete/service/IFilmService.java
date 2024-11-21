@@ -20,7 +20,7 @@ public interface IFilmService {
 
     ResponseEntity<Response> saveFilmById(@RequestParam(defaultValue = "movie") String movie, @PathVariable int id);
 
-    ResponseEntity<Response> save (FilmModel film) throws IOException;
+    //ResponseEntity<Response> save (FilmModel film) throws IOException;
     List<FilmModel> findAll ();
     ResponseEntity<Response> findById (Integer id);
 

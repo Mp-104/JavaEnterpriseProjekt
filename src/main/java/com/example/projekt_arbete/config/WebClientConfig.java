@@ -35,7 +35,9 @@ public class WebClientConfig {
                     }
                 });
 
-        return WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient)
+        return WebClient.builder()
+                //.baseUrl("https://api.themoviedb.org/3/")
+                .clientConnector(new ReactorClientHttpConnector(httpClient)
            // ).filter(this.csrfTokenFilter()
                 );
     }

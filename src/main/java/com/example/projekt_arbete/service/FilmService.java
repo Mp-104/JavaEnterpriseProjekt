@@ -39,15 +39,14 @@ public class FilmService implements IFilmService{
     private final IFilmDAO filmDao;
 
     private final IUserService userService;
-    private WebClient webClientConfig;
+    //private final WebClient webClientConfig;
     private final RateLimiter rateLimiter;
 
     @Autowired
-    public FilmService (WebClient.Builder webClient,IFilmDAO filmDao, IUserService userService, RateLimiter rateLimiter) {
+    public FilmService (//WebClient.Builder webClient,
+                        IFilmDAO filmDao, IUserService userService, RateLimiter rateLimiter) {
         //this.filmRepository = filmRepository;
-        this.webClientConfig = webClient
-                .baseUrl("https://api.themoviedb.org/3/")
-                .build();
+       // this.webClientConfig = webClient.baseUrl("https://api.themoviedb.org/3/").build();
         this.filmDao = filmDao;
         this.userService = userService;
         this.rateLimiter = rateLimiter;
@@ -55,94 +54,21 @@ public class FilmService implements IFilmService{
 
     @Override
     public ResponseEntity<Response> getFilmById(int id) {
-        String movie = "movie";
 
-        try {
-            if (rateLimiter.acquirePermission()) {
-                System.out.println("in getFilmbyId of RestController");
-
-                Optional<FilmModel> response = Optional.ofNullable(webClientConfig
-                        .get()
-                        .uri(film -> film
-                                .path( movie + "/" + id)
-                                .queryParam("api_key", ApiKey)
-                                .build())
-                        .retrieve()
-                        .bodyToMono(FilmModel.class)
-                        .block());
-
-                if (response.isPresent()) {
-                    return ResponseEntity.ok(response.get());
-                }
-
-                return ResponseEntity.status(404).body(new ErrorResponse("Ingen sån film"));
-            } else {
-                return ResponseEntity.status(429).body(new ErrorResponse("för mycket förfråga"));
-            }
-
-        } catch (WebClientResponseException e) {
-            return ResponseEntity.status(404).body(new ErrorResponse("Ingen sån film"));
-        }
+       return filmDao.getFilmById(id);
 
     }
 
     @Override
     public ResponseEntity<Response> saveFilmById(@RequestParam(defaultValue = "movie") String movie, @PathVariable int id) {
 
-        try {
-
-            if (rateLimiter.acquirePermission()) {
-                Optional<FilmModel> response = Optional.ofNullable(webClientConfig.get()
-                        .uri(film -> film
-                                .path(movie + "/" + id)
-                                .queryParam("api_key", ApiKey)
-                                .build())
-                        .retrieve()
-                        .bodyToMono(FilmModel.class)
-                        .block());
-
-                if (response.isPresent()) {
-
-                    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                    String username = authentication.getName();
-                    CustomUser currentUser = userService.findUserByUsername(username).get();
-                    List<FilmModel> usersFilms = currentUser.getFilmList();
-
-                    List<FilmModel> allFilms = findAll();
+        return filmDao.saveFilmById(movie, id);
 
 
-                    for (FilmModel film : usersFilms) {
-                        System.out.println("for each film.getId(): " + film.getId());
-
-                        if (film.getId() == response.get().getId()) {
-
-                            return ResponseEntity.ok(new ErrorResponse("Du har filmen redan sparad :) "));
-                        }
-
-                    }
-
-
-
-                    save(response.get());
-
-                    return ResponseEntity.status(201).body(response.get());
-                }
-
-                return ResponseEntity.status(404).body(new ErrorResponse("film inte funnen"));
-
-            } else {
-                return ResponseEntity.status(429).body(new ErrorResponse("för mycket förfråga"));
-            }
-
-        } catch (WebClientResponseException e) {
-            return ResponseEntity.status(404).body(new ErrorResponse("film inte funnen"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
     }
 
-    @Override
+    /*@Override
     public ResponseEntity<Response> save (FilmModel film) throws IOException {
 
         String poster = film.getPoster_path();
@@ -229,7 +155,7 @@ public class FilmService implements IFilmService{
         return ResponseEntity.ok(filmDao.save(film));
         //return filmRepository.findById(film.getId()).get();
 
-    }
+    }*/
 
     @Override
     public List<FilmModel> findAll () {

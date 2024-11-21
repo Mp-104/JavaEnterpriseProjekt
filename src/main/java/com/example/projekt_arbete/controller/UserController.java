@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Controller
 public class UserController {
@@ -84,6 +85,32 @@ public class UserController {
         model.addAttribute("user" , new UserDTO("", "", null));
 
         return "register";
+    }
+
+    @GetMapping("/admin")
+    public String adminPage (Model model) {
+
+        List<CustomUser> userList = userService.getAllUsers();
+
+        model.addAttribute("users", userList );
+
+        return "admin-page";
+    }
+
+    @PostMapping("/delete")
+    public String deleteUser (@ModelAttribute("id") Long id, Model model) {
+
+        if (id == 1) {
+            model.addAttribute("error", "kan inte radera användare med id: 1");
+            model.addAttribute("users", userService.getAllUsers());
+            return "admin-page";
+        }
+
+        userService.deleteUserById(id);
+
+
+        return "redirect:/admin";
+
     }
 
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -55,5 +56,16 @@ public class UserService implements IUserService{
 
         return userRepository.findByUsername(username);
 
+    }
+
+    @Override
+    public List<CustomUser> getAllUsers() {
+
+        return userRepository.findAll();
+    }
+
+    @Override
+    public void deleteUserById (Long id) {
+        userRepository.deleteById(id);
     }
 }
