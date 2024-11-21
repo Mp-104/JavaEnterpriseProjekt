@@ -91,12 +91,6 @@ public class FilmController {
         return "saved-films";
     }
 
-    @GetMapping("/login")
-    public String loginPage () {
-
-        return "login";
-    }
-
     @GetMapping("/movies/search")
     public String searchMoviesPage (Model model) {
 

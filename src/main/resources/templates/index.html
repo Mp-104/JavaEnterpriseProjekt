@@ -6,33 +6,46 @@
     <title>Film hantera</title>
 </head>
 <body>
-<h1>Film Hanterare</h1>
-<p>Välkommen <span th:text="${username}"></span></p>
-<div>
-    <a href="/movies/savedfilms">Sparade filmer</a>
-    <br>
-    <a href="/movies/search">kanske söka film PÅGÅENDE ARBETE</a>
-    <br>
-    <a href="/movies/info">Film info ARBETE PÅGÅR</a>
-    <br>
-    <a href="/movies/searchid">Sök film på id ARBETE PÅGÅR</a>
-    <br>
 
-    <div sec:authorize="hasRole('ROLE_ADMIN')">
-        <a href="/admin">Till admin sidan</a>
+    <h1>Film Hanterare</h1>
+
+    <p>Välkommen <span th:text="${username}"></span></p>
+
+    <form th:action="@{/logout}" method="post">
+        <button type="submit">Logga ut</button>
+    </form>
+    <br>
+    <br/>
+
+    <a href="/register">Registrera ny användare</a>
+    <br/>
+    <br/>
+
+    <div>
+        <a href="/movies/savedfilms">Sparade filmer</a>
+        <br>
+        <a href="/movies/search">kanske söka film PÅGÅENDE ARBETE</a>
+        <br>
+        <a href="/movies/info">Film info ARBETE PÅGÅR</a>
+        <br>
+        <a href="/movies/searchid">Sök film på id ARBETE PÅGÅR</a>
+        <br>
+
+        <div sec:authorize="hasRole('ROLE_ADMIN')">
+            <a href="/admin">Till admin sidan</a>
+        </div>
+
     </div>
+    <h2><span th:text="${username}"></span>'s filmer</h2>
 
-</div>
-<h2><span th:text="${username}"></span>'s filmer</h2>
+    <div>
+        <ul>
+            <li th:each="film : ${films}">
 
-<div>
-    <ul>
-        <li th:each="film : ${films}">
+                <a th:href="@{/films/getfilm/{id}(id=${film.filmid})}"><span th:text="${film.title}">Title</span></a>
+            </li>
 
-            <a th:href="@{/films/getfilm/{id}(id=${film.filmid})}"><span th:text="${film.title}">Title</span></a>
-        </li>
-
-    </ul>
-</div>
+        </ul>
+    </div>
 </body>
 </html>

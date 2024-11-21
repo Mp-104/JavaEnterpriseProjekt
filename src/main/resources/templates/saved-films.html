@@ -17,7 +17,10 @@
             <a th:href="@{/films/savedfilms/{id}(id=${film.filmid})}">Se detaljer (Bara ett JSON objekt)</a>
             <a th:href="@{/films/savedfilms/{id}/delete(id=${film.id})}">Delete (ej implementerat)</a>
             <br/>
+
+            <!--
             <img th:src="'https://image.tmdb.org/t/p/original/' + ${film.poster_path}">
+            -->
 
             <br/>
             <img th:src="'data:image/jpeg;base64, ' + ${film.base64Image}">

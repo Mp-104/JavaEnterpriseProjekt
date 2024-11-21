@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrering</title>
+</head>
+<body>
+    <h1>Registrera ny användare</h1>
+
+    <form th:action="@{/register}" th:object="${user}" method="post">
+
+        <label>Username
+            <input type="text" name="username" th:field="*{username}">
+        </label>
+
+        <br/>
+        <br/>
+
+        <label>Password
+            <input type="password" name="password" th:field="*{password}">
+        </label>
+
+        <br/>
+        <br/>
+
+        <label>
+            roll:
+            <select th:field="*{userRole}">
+                <option th:each="index : ${roles}" th:value="${index}" th:text="${index}"></option>
+            </select>
+        </label>
+
+        <br/>
+        <br/>
+
+
+        <button type="submit">Registrera!</button>
+
+    </form>
+
+</body>
+</html>

@@ -9,6 +9,16 @@ import java.util.List;
 @Entity
 public class CustomUser {
 
+    public CustomUser(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    public CustomUser () {
+
+    }
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,6 +39,8 @@ public class CustomUser {
     private boolean isAccountNonLocked;
     private boolean isCredentialNonExpired;
     private boolean isEnabled;
+
+
 
     public Long getId() {
         return id;

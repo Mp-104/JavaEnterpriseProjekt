@@ -10,7 +10,7 @@ import static com.example.projekt_arbete.authorities.UserPermission.*;
 public enum UserRole {
     GUEST(List.of(GET.getPermission())),
     USER(List.of(GET.getPermission(), POST.getPermission())),
-    ADMIN(List.of(GET.getPermission(), POST.getPermission(), DELETE.getPermission()));
+    ADMIN(List.of(GET.getPermission(), POST.getPermission(), DELETE.getPermission(), PUT.getPermission()));
 
     private final List<String> permission;
 

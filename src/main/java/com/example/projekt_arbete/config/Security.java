@@ -39,17 +39,17 @@ public class Security {
         http
                 //.csrf(Customizer.withDefaults())
                 //.csrf(csrf -> csrf.disable())
-                .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+//                .csrf(csrf -> csrf
+//                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+//                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
 
 
                         //.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
                 .authorizeHttpRequests(
                     authorizeRequests -> authorizeRequests
                             .requestMatchers( "https://localhost:8443/login", "/logout").permitAll()
-                            .requestMatchers("/login", "/films/*").permitAll()
+                            .requestMatchers("/login").permitAll()
                             .requestMatchers("/admin").hasRole(UserRole.ADMIN.toString())
                             .anyRequest().authenticated())
                 .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer
@@ -58,7 +58,14 @@ public class Security {
                         .rememberMeParameter("remember-me")
                         .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(20))
                         .key("appSecureKey")
-                        .userDetailsService(customUserDetailService));
+                        .userDetailsService(customUserDetailService))
+
+                .logout( httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer
+                        .logoutUrl("/logout")
+                        .clearAuthentication(true)
+                        .invalidateHttpSession(true)
+                        .deleteCookies("remember-me", "JSESSIONID", "XSRF-TOKEN")
+                        .permitAll());
 
         return http.build();
 
