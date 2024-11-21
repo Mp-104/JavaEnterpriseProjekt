@@ -68,56 +68,7 @@ public class Controller {
     @PostMapping("/{id}")
     public ResponseEntity<Response> saveFilmById (@RequestParam(defaultValue = "movie") String movie, @PathVariable int id) {
 
-        try {
-
-            if (rateLimiter.acquirePermission()) {
-                Optional<FilmModel> response = Optional.ofNullable(webClientConfig.get()
-                        .uri(film -> film
-                                .path(movie + "/" + id)
-                                .queryParam("api_key", ApiKey)
-                                .build())
-                        .retrieve()
-                        .bodyToMono(FilmModel.class)
-                        .block());
-
-                if (response.isPresent()) {
-
-                    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                    String username = authentication.getName();
-                    CustomUser currentUser = userService.findUserByUsername(username).get();
-                    List<FilmModel> usersFilms = currentUser.getFilmList();
-
-                    List<FilmModel> allFilms = filmService.findAll();
-
-
-                    for (FilmModel film : usersFilms) {
-                        System.out.println("for each film.getId(): " + film.getId());
-
-                        if (film.getId() == response.get().getId()) {
-
-                            return ResponseEntity.ok(new ErrorResponse("Du har filmen redan sparad :) "));
-                        }
-
-                    }
-
-
-
-                    filmService.save(response.get());
-
-                    return ResponseEntity.status(201).body(response.get());
-                }
-
-                return ResponseEntity.status(404).body(new ErrorResponse("film inte funnen"));
-
-            } else {
-                return ResponseEntity.status(429).body(new ErrorResponse("för mycket förfråga"));
-            }
-
-        } catch (WebClientResponseException e) {
-            return ResponseEntity.status(404).body(new ErrorResponse("film inte funnen"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+       return filmService.saveFilmById("movie" , id);
 
     }
 
@@ -194,22 +145,17 @@ public class Controller {
     public ResponseEntity<Response> getFilmsByCountry (@PathVariable("country") String country,
                                                        @RequestParam(value = "title", required = false) String title) {
 
-        if (rateLimiter.acquirePermission()) {
-            return filmService.getFilmByCountry(country, title);
-        } else {
-            return ResponseEntity.status(429).body(new ErrorResponse("för många förfrågan"));
-        }
+
+        return filmService.getFilmByCountry(country, title);
+
     }
 
 
     @GetMapping("/info")
     public ResponseEntity<Response> getInfo () {
 
-        if (rateLimiter.acquirePermission()) {
-            return filmService.getInfo();
-        } else {
-            return ResponseEntity.status(429).body(new ErrorResponse("för många förfrågan"));
-        }
+        return filmService.getInfo();
+
     }
 
     @GetMapping("/getfilm/{filmId}")
@@ -217,11 +163,9 @@ public class Controller {
     public ResponseEntity<Response> getFilmWithAdditionalInfo (@PathVariable("filmId") int filmId,
                                                              @RequestParam(value = "opinion", defaultValue = "false") boolean opinion,
                                                              @RequestParam(value = "description", defaultValue = "false") boolean description) {
-        if (rateLimiter.acquirePermission()) {
-            return filmService.getFilmWithAdditionalInfo(filmId, opinion, description);
-        } else {
-            return ResponseEntity.status(429).body(new ErrorResponse("för många förfrågan"));
-        }
+
+        return filmService.getFilmWithAdditionalInfo(filmId, opinion, description);
+
     }
 
     @GetMapping("/image/{id}")

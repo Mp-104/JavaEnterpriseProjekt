@@ -4,10 +4,13 @@ import com.example.projekt_arbete.authorities.UserRole;
 import com.example.projekt_arbete.model.CustomUser;
 import com.example.projekt_arbete.model.UserDTO;
 import com.example.projekt_arbete.service.IUserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,8 +49,6 @@ public class UserController {
     @GetMapping("/register")
     public String registerPage (Model model) {
 
-        System.out.println("userRoles: " + Arrays.toString(UserRole.values()));
-        System.out.println("userRoles: " + UserRole.values());
 
         model.addAttribute("user", new UserDTO("", "", null));
         model.addAttribute("roles", UserRole.values());
@@ -55,23 +56,34 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String registerUser (@ModelAttribute("user") UserDTO userDTO
+    public String registerUser (@Valid @ModelAttribute("user") UserDTO userDTO, BindingResult bindingResult
+                                ,Model model
+
                                 //,@ModelAttribute("roles") UserRole role
     ) {
         //System.out.println("role: " + role);
 
-        CustomUser newUser = new CustomUser(userDTO.username(), encoder.encode(userDTO.password()));
-        newUser.setUserRole(userDTO.userRole());
-        newUser.setAccountNonLocked(true);
-        newUser.setEnabled(true);
+//        CustomUser newUser = new CustomUser(userDTO.username(), encoder.encode(userDTO.password()));
+//        newUser.setUserRole(userDTO.userRole());
+//        newUser.setAccountNonLocked(true);
+//        newUser.setEnabled(true);
+//
+//        newUser.setAccountNonExpired(true);
+//        newUser.setCredentialNonExpired(true);
 
-        newUser.setAccountNonExpired(true);
-        newUser.setCredentialNonExpired(true);
+        if (bindingResult.hasErrors()) {
 
-        userService.saveUser(newUser);
+            model.addAttribute("roles" , UserRole.values());
+            //model.addAttribute("user" , new UserDTO("", "", null));
 
+            return "register";
+        }
 
-        return "redirect:/";
+        model.addAttribute("status", userService.saveUser(userDTO));
+        model.addAttribute("roles" , UserRole.values());
+        model.addAttribute("user" , new UserDTO("", "", null));
+
+        return "register";
     }
 
 }

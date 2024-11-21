@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Registrering</title>
@@ -13,6 +13,18 @@
             <input type="text" name="username" th:field="*{username}">
         </label>
 
+        <div th:if="${#fields.hasErrors('username')}" class="error">
+            <ul>
+                <li th:each="err : ${#fields.errors('username')}" th:text="${err}"></li>
+            </ul>
+        </div>
+
+        <br/>
+
+        <div th:if="${status != 'användare registrerad'}">
+            <span th:text="${status}"></span>
+        </div>
+
         <br/>
         <br/>
 
@@ -23,6 +35,12 @@
         <br/>
         <br/>
 
+        <div th:if="${#fields.hasErrors('password')}" class="error">
+            <ul>
+                <li th:each="err : ${#fields.errors('password')}" th:text="${err}"></li>
+            </ul>
+        </div>
+
         <label>
             roll:
             <select th:field="*{userRole}">
@@ -30,13 +48,28 @@
             </select>
         </label>
 
+        <div th:if="${#fields.hasErrors('userRole')}" class="error">
+            <ul>
+                <li th:each="err : ${#fields.errors('userRole')}" th:text="${err}"></li>
+            </ul>
+        </div>
+
         <br/>
         <br/>
+
 
 
         <button type="submit">Registrera!</button>
 
     </form>
+
+
+
+    <br/>
+
+    <div th:if="${status == 'användare registrerad'}">
+        <span th:text="${status}"></span>
+    </div>
 
 </body>
 </html>

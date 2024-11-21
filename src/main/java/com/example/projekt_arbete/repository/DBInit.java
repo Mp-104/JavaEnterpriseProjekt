@@ -2,6 +2,7 @@ package com.example.projekt_arbete.repository;
 
 import com.example.projekt_arbete.authorities.UserRole;
 import com.example.projekt_arbete.model.CustomUser;
+import com.example.projekt_arbete.model.UserDTO;
 import com.example.projekt_arbete.service.IUserService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,8 +52,13 @@ public class DBInit {
         user2.setCredentialNonExpired(true);
         user2.setEnabled(true);
 
-        userService.saveUser(user);
-        userService.saveUser(user2);
+        UserDTO user0 = new UserDTO("test", "test", UserRole.ADMIN);
+        UserDTO user1 = new UserDTO("test2", "test", UserRole.USER);
+
+
+
+        userService.saveUser(user0);
+        userService.saveUser(user1);
     }
 
 }
