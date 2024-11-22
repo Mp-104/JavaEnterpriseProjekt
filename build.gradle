@@ -39,3 +39,10 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+test {
+	useJUnitPlatform() // This is important for JUnit 5 tests
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
+}
