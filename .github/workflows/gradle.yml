@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      packages: write
 
     steps:
       - uses: actions/checkout@v4
@@ -28,3 +29,12 @@ jobs:
 
       - name: Build with Gradle Wrapper
         run: ./gradlew build
+
+      # Build Dockerfile image
+      - name: Build Dockerfile Image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile  # Path to your Dockerfile
+          push: false  # Set to true if you want to push the image to Dockerfile Hub or another registry
+          tags: Java-enterprise-projektarbete:latest  # Set your desired image name and tag

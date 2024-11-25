@@ -222,7 +222,7 @@ public class FilmServiceTest {
         ResponseEntity<Response> response = filmService.getFilmByCountry("US", "Test Film");
 
         assertEquals(429, response.getStatusCodeValue(), "Status code should be 429 Too Many Requests");
-        assertTrue(response.getBody() instanceof ErrorResponse, "Response body should be a ErrorResponse");
+        assertTrue(response.getBody() instanceof ErrorResponse, "Response body should be a ErrorResponse ");
 
     }
 
