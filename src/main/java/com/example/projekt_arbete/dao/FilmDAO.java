@@ -34,20 +34,21 @@ public class FilmDAO implements IFilmDAO {
 
     private final FilmRepository filmRepository;
 
-    private final RateLimiter rateLimiter;
+    //private final RateLimiter rateLimiter;
 
-    private final WebClient webClientConfig;
+   // private final WebClient webClientConfig;
 
     private final IUserService userService;
 
     @Autowired
-    public FilmDAO(FilmRepository filmRepository, WebClient.Builder webClient, RateLimiter rateLimiter, IUserService userService) {
+    public FilmDAO(FilmRepository filmRepository,
+                   //WebClient.Builder webClient,
+                   //RateLimiter rateLimiter,
+                   IUserService userService) {
         this.filmRepository = filmRepository;
         this.userService = userService;
-        this.rateLimiter = rateLimiter;
-        this.webClientConfig = webClient
-                .baseUrl("https://api.themoviedb.org/3/")
-                .build();
+        //this.rateLimiter = rateLimiter;
+        //this.webClientConfig = webClient.baseUrl("https://api.themoviedb.org/3/").build();
 
     }
 
@@ -81,6 +82,7 @@ public class FilmDAO implements IFilmDAO {
         return filmRepository.findByTitleIgnoreCase(filmName);
     }
 
+    /*
     @Override
     public ResponseEntity<Response> getFilmById(int id) {
 
@@ -169,8 +171,10 @@ public class FilmDAO implements IFilmDAO {
             throw new RuntimeException(e);
         }
     }
+    */
 
-    private ResponseEntity<Response> saveFilm(FilmModel film) throws IOException {
+    @Override
+    public ResponseEntity<Response> saveFilm(FilmModel film) throws IOException {
 
         String poster = film.getPoster_path();
 

@@ -1,5 +1,6 @@
 package com.example.projekt_arbete.service;
 
+import com.example.projekt_arbete.client.FilmApiClient;
 import com.example.projekt_arbete.dao.IFilmDAO;
 import com.example.projekt_arbete.model.CustomUser;
 import com.example.projekt_arbete.model.FilmDTO;
@@ -40,32 +41,47 @@ public class FilmService implements IFilmService{
 
     private final IUserService userService;
     //private final WebClient webClientConfig;
+    private final FilmApiClient filmApiClient;
     private final RateLimiter rateLimiter;
 
     @Autowired
     public FilmService (//WebClient.Builder webClient,
+                        FilmApiClient filmApiClient,
                         IFilmDAO filmDao, IUserService userService, RateLimiter rateLimiter) {
         //this.filmRepository = filmRepository;
        // this.webClientConfig = webClient.baseUrl("https://api.themoviedb.org/3/").build();
         this.filmDao = filmDao;
         this.userService = userService;
         this.rateLimiter = rateLimiter;
+        this.filmApiClient = filmApiClient;
     }
 
     @Override
     public ResponseEntity<Response> getFilmById(int id) {
 
-       return filmDao.getFilmById(id);
+        Optional<FilmModel> film = filmApiClient.getFilmById(id);
+
+        if (film.isPresent()) {
+            return ResponseEntity.ok(film.get());
+        } else {
+            return ResponseEntity.status(404).body(new ErrorResponse("Film inte funnen"));
+        }
+       //return filmDao.getFilmById(id);
 
     }
 
     @Override
-    public ResponseEntity<Response> saveFilmById(@RequestParam(defaultValue = "movie") String movie, @PathVariable int id) {
+    public ResponseEntity<Response> saveFilmById(@RequestParam(defaultValue = "movie") String movie, @PathVariable int id) throws IOException {
 
-        return filmDao.saveFilmById(movie, id);
+        Optional<FilmModel> film = filmApiClient.getFilmById(id);
 
-
-
+        if (film.isPresent()) {
+            filmDao.saveFilm(film.get());
+            return ResponseEntity.ok(film.get());
+        } else {
+            return ResponseEntity.status(404).body(new ErrorResponse("Film inte funnen"));
+        }
+        //return filmDao.saveFilmById(movie, id);
     }
 
     /*@Override
