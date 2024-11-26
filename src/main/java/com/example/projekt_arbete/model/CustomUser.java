@@ -32,7 +32,7 @@ public class CustomUser {
 //    @OneToMany(mappedBy = "customUser", cascade = CascadeType.ALL)
 //    private List<FilmModel> filmList;
 
-    @ManyToMany(mappedBy = "customUsers", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "customUsers")
     private List<FilmModel> filmList;
 
     private boolean isAccountNonExpired;

@@ -38,15 +38,16 @@ public class FilmDAO implements IFilmDAO {
 
    // private final WebClient webClientConfig;
 
-    private final IUserService userService;
+    //private final IUserService userService;
 
     @Autowired
-    public FilmDAO(FilmRepository filmRepository,
-                   //WebClient.Builder webClient,
+    public FilmDAO(FilmRepository filmRepository
+                   //,WebClient.Builder webClient,
                    //RateLimiter rateLimiter,
-                   IUserService userService) {
+                  // IUserService userService
+    ) {
         this.filmRepository = filmRepository;
-        this.userService = userService;
+        //this.userService = userService;
         //this.rateLimiter = rateLimiter;
         //this.webClientConfig = webClient.baseUrl("https://api.themoviedb.org/3/").build();
 

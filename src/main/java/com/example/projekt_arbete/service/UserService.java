@@ -1,7 +1,10 @@
 package com.example.projekt_arbete.service;
 
+import com.example.projekt_arbete.dao.IFilmDAO;
 import com.example.projekt_arbete.model.CustomUser;
+import com.example.projekt_arbete.model.FilmModel;
 import com.example.projekt_arbete.model.UserDTO;
+import com.example.projekt_arbete.repository.FilmRepository;
 import com.example.projekt_arbete.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,10 +19,13 @@ public class UserService implements IUserService{
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
 
+    private final IFilmDAO filmDAO;
+
     @Autowired
-    public UserService (UserRepository userRepository, PasswordEncoder encoder) {
+    public UserService (UserRepository userRepository, PasswordEncoder encoder, IFilmDAO filmDAO) {
         this.userRepository = userRepository;
         this.encoder = encoder;
+        this.filmDAO = filmDAO;
     }
 
     @Override
@@ -66,6 +72,13 @@ public class UserService implements IUserService{
 
     @Override
     public void deleteUserById (Long id) {
+        CustomUser user = userRepository.findById(id).get();
+
+        for (FilmModel film : user.getFilmList()) {
+            film.getCustomUsers().remove(user);
+            filmDAO.save(film);
+        }
+
         userRepository.deleteById(id);
     }
 }
