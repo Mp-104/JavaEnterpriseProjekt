@@ -73,11 +73,98 @@ public class FilmService implements IFilmService{
     @Override
     public ResponseEntity<Response> saveFilmById(@RequestParam(defaultValue = "movie") String movie, @PathVariable int id) throws IOException {
 
-        Optional<FilmModel> film = filmApiClient.getFilmById(id);
+        Optional<FilmModel> optionalFilm = filmApiClient.getFilmById(id);
 
-        if (film.isPresent()) {
-            filmDao.saveFilm(film.get());
-            return ResponseEntity.ok(film.get());
+        if (optionalFilm.isPresent()) {
+
+            FilmModel film = optionalFilm.get();
+
+            String poster = film.getPoster_path();
+
+            String path = "https://image.tmdb.org/t/p/original/";
+
+            String imagePath = path + poster;
+
+            URL url = new URL(imagePath);
+
+            URLConnection connection = url.openConnection();
+
+            connection.connect();
+            //TODO - Error handle if no image link present
+            try (InputStream inputStream = connection.getInputStream();
+                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()
+            ){
+
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    byteArrayOutputStream.write(buffer, 0, bytesRead);
+                }
+
+                film.setImage(byteArrayOutputStream.toByteArray());
+
+
+            }
+
+            String base64 = Base64.getEncoder().encodeToString(film.getImage());
+
+            film.setBase64Image(base64);
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            String username = authentication.getName();
+
+            CustomUser user = userService.findUserByUsername(username).get();
+
+            System.out.println("film.getId: " + film.getId());
+            System.out.println("film.getfilmid: " + film.getFilmid());
+            // System.out.println("film.geCustomUser: " + film.getCustomUser());
+            //System.out.println("current film: " + filmRepository.findById(film.getId()).get().);
+
+            // List<FilmModel> allFilms = filmRepository.findAll();
+            List<FilmModel> allFilms = findAll();
+
+            for (FilmModel film1 : allFilms) {
+
+                if (film1.getId() == film.getId()) {
+
+                    //FilmModel currentFilm = filmRepository.findByTitle(film.getTitle()).get();
+                    FilmModel currentFilm = findByTitle(film.getTitle()).get();
+
+                    //List<CustomUser> list = currentFilm.getCustomUser();
+
+                    //list.add(user);
+
+                    //currentFilm.setCustomUser(currentFilm.getCustomUser().add(user) );
+                    //currentFilm.setCustomUser(list);
+
+                    List<CustomUser> customUserList = currentFilm.getCustomUsers();
+                    customUserList.add(user);
+                    currentFilm.setCustomUsers(customUserList);
+
+                    return ResponseEntity.ok(filmDao.save(currentFilm));
+
+                }
+
+            }
+
+            // List<CustomUser> list = film.getCustomUser();
+            //list.add(user);
+
+            //film.setCustomUser(list);
+
+            //film.setCustomUser(user);
+            //film.getCustomUsers().add(user);
+            List<CustomUser> customUserList = new ArrayList<>();
+            customUserList.add(user);
+
+            film.setCustomUsers(customUserList);
+            return ResponseEntity.ok(filmDao.save(film));
+
+
+            //filmDao.saveFilm(optionalFilm.get());
+           // return ResponseEntity.ok(optionalFilm.get());
         } else {
             return ResponseEntity.status(404).body(new ErrorResponse("Film inte funnen"));
         }
