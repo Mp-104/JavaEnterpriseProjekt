@@ -26,7 +26,8 @@ WORKDIR /app
 COPY --from=build /app/build/libs/*.jar app.jar
 
 # Expose the port that the application will run on
-EXPOSE 8443
+# EXPOSE 8443
+EXPOSE 80
 
 # Command to run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -32,26 +32,16 @@ import java.util.*;
 @Controller
 public class FilmController {
 
-    @Value("${app.username}")
-    private String username;
-
-    @Value("${app.password}")
-    private String password;
-
     private final IFilmService filmService;
     private final IUserService userService;
-    private final WebClient webClient;
+   // private final WebClient webClient;
 
-    public FilmController (IFilmService filmService, IUserService userService, WebClient.Builder webClientBuilder) {
+    public FilmController (IFilmService filmService, IUserService userService
+            //, WebClient.Builder webClientBuilder
+    ) {
         this.filmService = filmService;
         this.userService = userService;
-        this.webClient = webClientBuilder
-                .baseUrl("https://localhost:8443/films/")
-                .filter((request, next) -> {
-                    System.out.println("Request Headers: " + request.headers());
-                    return next.exchange(request);
-                })
-                .build();
+        //this.webClient = webClientBuilder.baseUrl("https://localhost:8443/films/").filter((request, next) -> {System.out.println("Request Headers: " + request.headers());return next.exchange(request);}).build();
     }
 
     @GetMapping("/")
@@ -61,16 +51,24 @@ public class FilmController {
 
         String username = authentication.getName();
 
-        CustomUser user = userService.findUserByUsername(username).get();
+        if(userService.findUserByUsername(username).isPresent()) {
 
-        List<FilmModel> filmList = user.getFilmList();
+            CustomUser user = userService.findUserByUsername(username).get();
+
+            List<FilmModel> filmList = user.getFilmList();
+
+            model.addAttribute("films", filmList);
+            model.addAttribute("username", username);
+
+            return "index";
+        }
+
 
         //TODO - Showing films saved by logged in user
         //model.addAttribute("films", filmService.findAll());
-        model.addAttribute("films", filmList);
-        model.addAttribute("username", username);
 
-        return "index";
+        return "redirect:/login";
+
     }
 
     @GetMapping("/movies/savedfilms")
@@ -146,8 +144,7 @@ public class FilmController {
     public String search (@RequestParam("filmId") String filmId, Model model) {
 
         System.out.println("in postMapping for searchid");
-        System.out.println("username: " + username);
-        System.out.println("password: " + password);
+
 
         // TODO - plenty! Check the username and password, and change to https, also error handle
         FilmModel film1 = null;

@@ -1,6 +1,5 @@
-package com.example.projekt_arbete;
+package com.example.projekt_arbete.service;
 
-import com.example.projekt_arbete.config.WebClientConfig;
 import com.example.projekt_arbete.dao.IFilmDAO;
 import com.example.projekt_arbete.model.CustomUser;
 import com.example.projekt_arbete.model.FilmDTO;
@@ -8,7 +7,6 @@ import com.example.projekt_arbete.model.FilmModel;
 import com.example.projekt_arbete.response.ErrorResponse;
 import com.example.projekt_arbete.response.IntegerResponse;
 import com.example.projekt_arbete.response.Response;
-import com.example.projekt_arbete.service.FilmService;
 import io.github.resilience4j.ratelimiter.RateLimiter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Arrays;
 import java.util.List;

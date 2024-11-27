@@ -49,7 +49,7 @@ public class Security {
                 .authorizeHttpRequests(
                     authorizeRequests -> authorizeRequests
                             .requestMatchers( "https://localhost:8443/login", "/logout").permitAll()
-                            .requestMatchers("/login").permitAll()
+                            .requestMatchers("/login", "/register").permitAll()
                             .requestMatchers("/admin").hasRole(UserRole.ADMIN.toString())
                             .anyRequest().authenticated())
                 .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer
