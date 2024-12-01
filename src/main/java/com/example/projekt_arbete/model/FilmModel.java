@@ -12,11 +12,11 @@ public class FilmModel implements Response {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int filmid;
 
-    @Lob
-    private byte[] image;
+    //@Lob
+    //private byte[] image;
 
-    @Lob
-    private String base64Image;
+    //@Lob
+    //private String base64Image;
 
 //    @ManyToOne
 //    @JoinColumn(name = "custom_user_id")
@@ -304,6 +304,7 @@ public class FilmModel implements Response {
         this.production_countries = production_countries;
     }
 
+    /*
     public String getBase64Image () {
         return base64Image;
     }
@@ -318,6 +319,8 @@ public class FilmModel implements Response {
     public void setImage(byte[] image) {
         this.image = image;
     }
+
+     */
 
 //    public CustomUser getCustomUser() {
 //        return customUser;

@@ -87,6 +87,7 @@ public class Controller {
         ResponseEntity<Response> film = filmService.findById(id);
 
         return film;
+        //return ResponseEntity.ok(film.getBody());
     }
 
     @PutMapping("/savedfilms/{id}")
@@ -168,6 +169,7 @@ public class Controller {
 
     }
 
+    /*
     @GetMapping("/image/{id}")
     private ResponseEntity<byte[]> seeImage (@PathVariable Integer id) throws IOException {
         FilmModel film = filmService.getFilmById(id).get();
@@ -209,6 +211,8 @@ public class Controller {
 
 
     }
+
+     */
 
 
 }

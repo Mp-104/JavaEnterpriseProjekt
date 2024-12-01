@@ -79,6 +79,7 @@ public class FilmService implements IFilmService{
 
             FilmModel film = optionalFilm.get();
 
+            /*
             String poster = film.getPoster_path();
 
             String path = "https://image.tmdb.org/t/p/original/";
@@ -110,12 +111,22 @@ public class FilmService implements IFilmService{
             String base64 = Base64.getEncoder().encodeToString(film.getImage());
 
             film.setBase64Image(base64);
-
+            */
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-            String username = authentication.getName();
 
-            CustomUser user = userService.findUserByUsername(username).get();
+
+            CustomUser user;
+
+            if (authentication != null) {
+                String username = authentication.getName();
+
+                user = userService.findUserByUsername(username).get();
+            } else {
+
+                user = userService.findUserByUsername("test").get();
+            }
+
 
             System.out.println("film.getId: " + film.getId());
             System.out.println("film.getfilmid: " + film.getFilmid());

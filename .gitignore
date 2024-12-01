@@ -44,5 +44,5 @@ src/main/resources/.env
 
 ###src/main/resources/mykeystore.p12
 
-src/main/resources/application.properties
+###src/main/resources/application.properties
 src/main/resources/mykeystore.p12

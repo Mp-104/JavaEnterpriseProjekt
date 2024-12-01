@@ -42,9 +42,14 @@
         <ul>
             <li th:each="film : ${films}">
 
-                <a th:href="@{/films/getfilm/{id}(id=${film.filmid})}"><span th:text="${film.title}">Title</span></a>
-            </li>
+                <span>Id: </span><span th:text="${film.id}">ID</span>
+                <br/>
 
+                <a th:href="@{/films/getfilm/{id}(id=${film.filmid})}">
+
+                    <span th:text="${film.title}">Title</span>
+                </a>
+            </li>
         </ul>
     </div>
 </body>
