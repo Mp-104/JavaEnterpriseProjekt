@@ -4,6 +4,7 @@ import com.example.projekt_arbete.dao.IFilmDAO;
 import com.example.projekt_arbete.model.CustomUser;
 import com.example.projekt_arbete.model.FilmDTO;
 import com.example.projekt_arbete.model.FilmModel;
+import com.example.projekt_arbete.model.UserFilm;
 import com.example.projekt_arbete.response.ErrorResponse;
 import com.example.projekt_arbete.response.IntegerResponse;
 import com.example.projekt_arbete.response.Response;
@@ -11,12 +12,16 @@ import io.github.resilience4j.ratelimiter.RateLimiter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,15 +38,27 @@ public class FilmServiceTest {
     //private FilmRepository filmRepository;
 
     @Mock
+    private Authentication authentication;
+
+    @Mock
+    private SecurityContext securityContext;
+
+    @Mock
     private IFilmDAO filmDao;
     @Mock
     private RateLimiter rateLimiter;
+
+    @Mock
+    private IUserService userService;
+    @Mock
+    private IUserFilmService userFilmService;
 
     @InjectMocks
     private FilmService filmService;
 
     private FilmModel mockFilm;
     private CustomUser mockUser;
+    private UserFilm mockUserFilm;
 
     @BeforeEach
     public void setUp() {
@@ -59,9 +76,12 @@ public class FilmServiceTest {
         filmDao.save(mockFilm);
 
 
+        mockUserFilm = new UserFilm();
 
         mockUser = new CustomUser();
         mockUser.setUsername("testuser");
+
+
     }
 
 //    @Test
@@ -236,20 +256,62 @@ public class FilmServiceTest {
         assertTrue(response.getBody() instanceof ErrorResponse, "Response body should be an ErrorResponse");
     }
 
-    // TODO - update to reflect new changes
-    /*
+
     @Test
-    public void testAddOpinion () {
+    //@MockitoSettings(strictness = Strictness.LENIENT)
+    public void testUpdateOpinion () {
+
+        securityContext = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+
+        authentication = mock(Authentication.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+
+        when(authentication.getName()).thenReturn("testuser");
 
         when(filmDao.findById(1)).thenReturn(Optional.of(mockFilm));
 
-        ResponseEntity<String> response = filmService.addOpinion(1, "bra film!");
+        when(userService.findUserByUsername("testuser")).thenReturn(Optional.of(mockUser));
 
-        assertEquals(201, response.getStatusCodeValue(), "Status code should be 201 Created");
-        assertEquals("bra film!", filmDao.findById(1).get().getOpinion());
-        assertEquals("Opinion adderad!", response.getBody(), "Response body should be 'Opinion adderad!'");
+        mockUser.setFilmList(List.of(mockFilm));
+        mockUserFilm.setFilmModel(mockFilm);
+        mockUserFilm.setCustomUser(mockUser);
+        mockUserFilm.setOpinion("den var ok");
+
+        when(userFilmService.findByFilmModelAndCustomUser(mockFilm, mockUser)).thenReturn(Optional.of(mockUserFilm));
+
+        ResponseEntity<String> response = filmService.addOpinion(1, "den var rätt bra ändå");
+
+        assertEquals(200, response.getStatusCodeValue(), "Status code should be 200 ok");
+        assertEquals("den var rätt bra ändå", userFilmService.findByFilmModelAndCustomUser(mockFilm, mockUser).get().getOpinion());
+        assertEquals("Opinion uppdaterad", response.getBody(), "Response body should be 'Opinion uppdaterad'");
     }
-    */
+
+
+    @Test
+   // @MockitoSettings(strictness = Strictness.LENIENT)
+    public void testAddOpinion () {
+
+        securityContext = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+
+        authentication = mock(Authentication.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+
+        when(authentication.getName()).thenReturn("testuser");
+
+        when(filmDao.findById(1)).thenReturn(Optional.of(mockFilm));
+
+        when(userService.findUserByUsername("testuser")).thenReturn(Optional.of(mockUser));
+
+        when(userFilmService.findByFilmModelAndCustomUser(mockFilm, mockUser)).thenReturn(Optional.empty());
+
+        ResponseEntity<String> response = filmService.addOpinion(1, "den var rätt bra ändå");
+
+        assertEquals(201, response.getStatusCodeValue(), "Status code should be 201 created");
+        assertEquals("Opinion adderad", response.getBody(), "Response body should be 'Opinion addaterad!'");
+    }
+
 
 
 
