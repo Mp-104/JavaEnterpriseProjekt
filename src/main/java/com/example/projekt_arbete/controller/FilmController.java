@@ -1,30 +1,16 @@
 package com.example.projekt_arbete.controller;
 
-import com.example.projekt_arbete.config.WebClientConfig;
-import com.example.projekt_arbete.model.CustomUser;
-import com.example.projekt_arbete.model.FilmDTO;
-import com.example.projekt_arbete.model.FilmModel;
+import com.example.projekt_arbete.model.*;
 import com.example.projekt_arbete.response.Response;
 import com.example.projekt_arbete.service.IFilmService;
+import com.example.projekt_arbete.service.IUserFilmService;
 import com.example.projekt_arbete.service.IUserService;
-import org.antlr.v4.runtime.misc.Pair;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.*;
@@ -34,14 +20,16 @@ public class FilmController {
 
     private final IFilmService filmService;
     private final IUserService userService;
+    private final IUserFilmService userFilmService;
    // private final WebClient webClient;
 
-    public FilmController (IFilmService filmService, IUserService userService
-            //, WebClient.Builder webClientBuilder
-    ) {
+    public FilmController (IFilmService filmService, IUserService userService,
+                           //, WebClient.Builder webClientBuilder
+                           IUserFilmService userFilmService) {
         this.filmService = filmService;
         this.userService = userService;
         //this.webClient = webClientBuilder.baseUrl("https://localhost:8443/films/").filter((request, next) -> {System.out.println("Request Headers: " + request.headers());return next.exchange(request);}).build();
+        this.userFilmService = userFilmService;
     }
 
     @GetMapping("/")
@@ -230,6 +218,52 @@ public class FilmController {
 
         //model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
         return "redirect:/";
+    }
+
+    @GetMapping("/opinion/{id}")
+    public String toOpinionPage (@PathVariable Integer id, Model model) {
+
+        FilmModel film = filmService.getFilmById(id).get();
+        CustomUser currentUser = userService.findUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName()).get();
+
+        Optional<UserFilm> optionalUserFilm = userFilmService.findByFilmModelAndCustomUser(film, currentUser);
+
+        UserFilm userFilm = null;
+
+        UserFilmDTO userFilmDTO = new UserFilmDTO();
+
+        if (optionalUserFilm.isPresent()) {
+
+            userFilm = optionalUserFilm.get();
+            userFilmDTO.setOpinion(userFilm.getOpinion());
+
+        }
+
+        userFilmDTO.setId(film.getFilmid());
+        userFilmDTO.setTitle(film.getTitle());
+
+
+        //film.getOpinion();
+
+        model.addAttribute("film", userFilmDTO);
+        //model.addAttribute("opinion", userFilm.getOpinion());
+        return "opinion-page";
+    }
+
+    @PostMapping("/opinion")
+    public String addOpinion (@ModelAttribute("film") UserFilmDTO film, Model model) {
+
+        filmService.addOpinion(film.getId(), film.getOpinion());
+
+        CustomUser user = userService.findUserByUsername("test").get();
+
+        //FilmModel filmModel = user.getFilmList().get(0);
+
+       // filmModel.getOpinion();
+
+        model.addAttribute("film", film);
+
+        return "opinion-page";
     }
 
 

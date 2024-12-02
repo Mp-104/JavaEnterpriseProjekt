@@ -49,6 +49,8 @@
 
                     <span th:text="${film.title}">Title</span>
                 </a>
+                <a th:href="@{/opinion/{id}(id=${film.filmid})}">Åsikt</a>
+
             </li>
         </ul>
     </div>

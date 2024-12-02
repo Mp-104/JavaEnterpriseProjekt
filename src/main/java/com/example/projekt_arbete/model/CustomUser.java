@@ -35,6 +35,17 @@ public class CustomUser {
     @ManyToMany(mappedBy = "customUsers")
     private List<FilmModel> filmList;
 
+    @OneToMany(mappedBy = "customUser", cascade = CascadeType.ALL)
+    private List<UserFilm> userFilms;
+
+    public List<UserFilm> getUserFilms() {
+        return userFilms;
+    }
+
+    public void setUserFilms(List<UserFilm> userFilms) {
+        this.userFilms = userFilms;
+    }
+
     private boolean isAccountNonExpired;
     private boolean isAccountNonLocked;
     private boolean isCredentialNonExpired;

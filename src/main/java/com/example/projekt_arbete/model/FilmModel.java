@@ -30,6 +30,17 @@ public class FilmModel implements Response {
     )
     private List<CustomUser> customUsers;
 
+    @OneToMany(mappedBy = "filmModel", cascade = CascadeType.ALL)
+    private List<UserFilm> userFilms;
+
+    public List<UserFilm> getUserFilms() {
+        return userFilms;
+    }
+
+    public void setUserFilms(List<UserFilm> userFilms) {
+        this.userFilms = userFilms;
+    }
+
     public List<CustomUser> getCustomUsers() {
         return customUsers;
     }
@@ -75,8 +86,8 @@ public class FilmModel implements Response {
     private double vote_average;
     private int vote_count;
 
-    @Column(length = 1000)
-    private String opinion;
+    //@Column(length = 1000)
+    //private String opinion;
 
     public FilmModel () {}
 
@@ -256,13 +267,14 @@ public class FilmModel implements Response {
         this.runtime = runtime;
     }
 
+    /*
     public String getOpinion() {
         return opinion;
     }
 
     public void setOpinion(String opinion) {
         this.opinion = opinion;
-    }
+    }*/
 
     public List<String> getOrigin_country() {
         return origin_country;

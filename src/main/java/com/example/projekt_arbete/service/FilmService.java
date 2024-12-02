@@ -5,6 +5,7 @@ import com.example.projekt_arbete.dao.IFilmDAO;
 import com.example.projekt_arbete.model.CustomUser;
 import com.example.projekt_arbete.model.FilmDTO;
 import com.example.projekt_arbete.model.FilmModel;
+import com.example.projekt_arbete.model.UserFilm;
 import com.example.projekt_arbete.response.ErrorResponse;
 import com.example.projekt_arbete.response.IntegerResponse;
 import com.example.projekt_arbete.response.ListResponse;
@@ -39,6 +40,8 @@ public class FilmService implements IFilmService{
     //private final FilmRepository filmRepository;
     private final IFilmDAO filmDao;
 
+    private final IUserFilmService userFilmService;
+
     private final IUserService userService;
     //private final WebClient webClientConfig;
     private final FilmApiClient filmApiClient;
@@ -47,6 +50,7 @@ public class FilmService implements IFilmService{
     @Autowired
     public FilmService (//WebClient.Builder webClient,
                         FilmApiClient filmApiClient,
+                        IUserFilmService userFilmService,
                         IFilmDAO filmDao, IUserService userService, RateLimiter rateLimiter) {
         //this.filmRepository = filmRepository;
        // this.webClientConfig = webClient.baseUrl("https://api.themoviedb.org/3/").build();
@@ -54,6 +58,7 @@ public class FilmService implements IFilmService{
         this.userService = userService;
         this.rateLimiter = rateLimiter;
         this.filmApiClient = filmApiClient;
+        this.userFilmService = userFilmService;
     }
 
     @Override
@@ -461,8 +466,32 @@ public class FilmService implements IFilmService{
                 return ResponseEntity.status(400).body("måste ha body");
             }
 
-            Optional<FilmModel> optionalFilm = filmDao.findById(id);
+            FilmModel optionalFilm = filmDao.findById(id).get();
+            CustomUser optionalCustomUser = userService.findUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName()).get();
 
+            Optional<UserFilm> existingUserFilm = userFilmService.findByFilmModelAndCustomUser(optionalFilm, optionalCustomUser);
+
+            if (existingUserFilm.isPresent()) {
+
+                UserFilm userFilm = existingUserFilm.get();
+                userFilm.setOpinion(opinion);
+
+                userFilmService.saveUserFilm(userFilm);
+
+                return ResponseEntity.ok().body("Opinion uppdaterad");
+            } else {
+
+                UserFilm newUserFilm = new UserFilm();
+                newUserFilm.setFilmModel(optionalFilm);
+                newUserFilm.setCustomUser(optionalCustomUser);
+                newUserFilm.setOpinion(opinion);
+
+                userFilmService.saveUserFilm(newUserFilm);
+
+                return ResponseEntity.status(201).body("Opinion adderad");
+
+            }
+            /*
             if (optionalFilm.isPresent()) {
 
                 optionalFilm.get().setOpinion(opinion);
@@ -472,7 +501,9 @@ public class FilmService implements IFilmService{
             } else {
 
                 return ResponseEntity.status(404).body("kan int finne film");
-            }
+            }*/
+
+
         } catch (Exception e) {
             return ResponseEntity.status(500).body("något fel");
         }
@@ -495,7 +526,7 @@ public class FilmService implements IFilmService{
 
                 if (opinion == true && description == true) {
                     filmDTO.setDescription(film.getOverview());
-                    filmDTO.setOpinion(film.getOpinion());
+                   // filmDTO.setOpinion(film.getOpinion());
                     filmDTO.setTitle(film.getTitle());
 
                     return ResponseEntity.ok(filmDTO);
@@ -503,7 +534,7 @@ public class FilmService implements IFilmService{
 
                 if (opinion == true) {
                     filmDTO.setTitle(film.getTitle());
-                    filmDTO.setOpinion(film.getOpinion());
+                    //filmDTO.setOpinion(film.getOpinion());
                     filmDTO.setDescription("inget här");
 
                     return ResponseEntity.ok(filmDTO);

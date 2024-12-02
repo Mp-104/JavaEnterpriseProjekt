@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IUserService {
+    Optional<CustomUser> findUserById(Long id);
+
     String saveUser (UserDTO userDTO);
 
     Optional<CustomUser> findUserByUsername(String username);

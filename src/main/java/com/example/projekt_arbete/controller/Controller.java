@@ -86,8 +86,9 @@ public class Controller {
     public ResponseEntity<Response> getFilm (@PathVariable int id) {
         ResponseEntity<Response> film = filmService.findById(id);
 
-        return film;
-        //return ResponseEntity.ok(film.getBody());
+        FilmModel film2 = (FilmModel) film.getBody();
+        //return film;
+        return ResponseEntity.ok(new ErrorResponse(film2.getTitle()));
     }
 
     @PutMapping("/savedfilms/{id}")

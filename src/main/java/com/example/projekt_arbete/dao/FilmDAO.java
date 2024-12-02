@@ -29,8 +29,8 @@ import java.util.Optional;
 @Component
 public class FilmDAO implements IFilmDAO {
 
-    @Value("${ApiKey}")
-    private String ApiKey;
+    //@Value("${ApiKey}")
+    //private String ApiKey;
 
     private final FilmRepository filmRepository;
 

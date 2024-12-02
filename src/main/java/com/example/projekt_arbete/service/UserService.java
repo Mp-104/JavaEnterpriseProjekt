@@ -4,7 +4,6 @@ import com.example.projekt_arbete.dao.IFilmDAO;
 import com.example.projekt_arbete.model.CustomUser;
 import com.example.projekt_arbete.model.FilmModel;
 import com.example.projekt_arbete.model.UserDTO;
-import com.example.projekt_arbete.repository.FilmRepository;
 import com.example.projekt_arbete.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +25,11 @@ public class UserService implements IUserService{
         this.userRepository = userRepository;
         this.encoder = encoder;
         this.filmDAO = filmDAO;
+    }
+
+    @Override
+    public Optional<CustomUser> findUserById(Long id) {
+        return userRepository.findById(id);
     }
 
     @Override
