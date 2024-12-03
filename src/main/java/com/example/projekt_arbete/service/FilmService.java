@@ -610,7 +610,7 @@ public class FilmService implements IFilmService{
                 IntegerResponse intRes = (IntegerResponse) getAverageRuntime().getBody();
                 int averageRuntime = intRes.getAverageRuntime();
 
-                return ResponseEntity.ok(new ErrorResponse("du har: " + findAll().size() + " filmer sparade." + "\n\r" +
+                return ResponseEntity.ok(new ErrorResponse("Det finns: " + findAll().size() + " filmer sparade." + "\n\r" +
                         " medellängden på filmerna är: " + averageRuntime + " minuter, " +
                         "varav " + adultFilms.size() + " porrfilm(er)" + "budge rank " + budgetFilms + " av dessa är " + USfilms + " amerkikanska och resten " + nonUSfilms + " från andra länder"));
 

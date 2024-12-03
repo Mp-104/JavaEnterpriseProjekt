@@ -45,11 +45,15 @@
                 <span>Id: </span><span th:text="${film.id}">ID</span>
                 <br/>
 
-                <a th:href="@{/films/getfilm/{id}(id=${film.filmid})}">
+                <span>Titel: </span><a th:href="@{/films/getfilm/{id}(id=${film.filmid})}">
 
                     <span th:text="${film.title}">Title</span>
                 </a>
+                <br/>
                 <a th:href="@{/opinion/{id}(id=${film.filmid})}">Åsikt</a>
+
+                <br/>
+                <br/>
 
             </li>
         </ul>
