@@ -10,24 +10,27 @@
     <a href="/">Tillbaka</a>
     <br/>
 
-    <p>Opinion</p>
-    <p th:text="${film.opinion}"></p>
+    <div>
+        <p>Opinion</p>
+        <p th:text="${film.opinion}"></p>
 
-    <br/>
-    <br/>
+        <br/>
+        <br/>
 
-    <form th:action="@{/opinion}" th:object="${film}" method="post">
+        <form th:action="@{/opinion}" th:object="${film}" method="post">
 
-        <input type="text" th:field="*{title}">
+            <input type="hidden" th:field="*{title}">
 
-        <input type="text" th:field="*{id}">
-        <label>
-            <input type="text" th:field="*{opinion}">
-        </label>
+            <input type="hidden" th:field="*{id}">
+            <label>
+                <input type="text" th:field="*{opinion}" placeholder="Din åsikt">
+            </label>
 
-        <button type="submit">Ändra/lägg till</button>
+            <button type="submit">Ändra/lägg till</button>
 
-    </form>
+        </form>
+    </div>
+
 
 </body>
 </html>

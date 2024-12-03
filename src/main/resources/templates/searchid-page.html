@@ -8,14 +8,16 @@
 
     <a href="/">Tillbaka</a>
 
-    <form th:action="@{/movies/searchid}" method="post">
+    <div>
 
-        <label for="filmId">Ange film id:</label>
-        <input type="number" id="filmId" name="filmId" required>
-        <button type="submit">Sök</button>
+        <form th:action="@{/movies/searchid}" method="post">
 
-    </form>
+            <label for="filmId">Ange film id:</label>
+            <input type="number" id="filmId" name="filmId" required>
+            <button type="submit">Sök</button>
 
+        </form>
+    </div>
     <div th:if="${error}">
         <p th:text="${error}"></p>
     </div>
@@ -33,8 +35,6 @@
             <p th:text="${film.title}"></p>
             <button type="submit">Se detaljer</button>
         </form>
-
-
 
     </div>
 

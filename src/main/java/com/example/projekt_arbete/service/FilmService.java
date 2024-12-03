@@ -527,6 +527,10 @@ public class FilmService implements IFilmService{
                 if (opinion == true && description == true) {
                     filmDTO.setDescription(film.getOverview());
                    // filmDTO.setOpinion(film.getOpinion());
+                    if (userFilmService.findByFilmModelAndCustomUser(film, userService.findUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName()).get()).isPresent()) {
+                        filmDTO.setOpinion(userFilmService.findByFilmModelAndCustomUser(film, userService.findUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName()).get()).get().getOpinion());
+                    }
+
                     filmDTO.setTitle(film.getTitle());
 
                     return ResponseEntity.ok(filmDTO);
@@ -534,7 +538,10 @@ public class FilmService implements IFilmService{
 
                 if (opinion == true) {
                     filmDTO.setTitle(film.getTitle());
-                    //filmDTO.setOpinion(film.getOpinion());
+                    if (userFilmService.findByFilmModelAndCustomUser(film, userService.findUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName()).get()).isPresent()) {
+                        filmDTO.setOpinion(userFilmService.findByFilmModelAndCustomUser(film, userService.findUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName()).get()).get().getOpinion());
+                    }
+
                     filmDTO.setDescription("inget här");
 
                     return ResponseEntity.ok(filmDTO);
@@ -612,7 +619,7 @@ public class FilmService implements IFilmService{
 
                 return ResponseEntity.ok(new ErrorResponse("Det finns: " + findAll().size() + " filmer sparade." + "\n\r" +
                         " medellängden på filmerna är: " + averageRuntime + " minuter, " +
-                        "varav " + adultFilms.size() + " porrfilm(er)" + "budge rank " + budgetFilms + " av dessa är " + USfilms + " amerkikanska och resten " + nonUSfilms + " från andra länder"));
+                        "varav " + adultFilms.size() + " porrfilm(er)" + "budge rank " + budgetFilms + " av dessa är " + USfilms + " amerikanska och resten " + nonUSfilms + " från andra länder"));
 
 
             } catch (Exception e) {

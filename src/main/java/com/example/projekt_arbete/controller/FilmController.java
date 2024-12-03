@@ -1,6 +1,7 @@
 package com.example.projekt_arbete.controller;
 
 import com.example.projekt_arbete.model.*;
+import com.example.projekt_arbete.response.ErrorResponse;
 import com.example.projekt_arbete.response.Response;
 import com.example.projekt_arbete.service.IFilmService;
 import com.example.projekt_arbete.service.IUserFilmService;
@@ -264,6 +265,29 @@ public class FilmController {
         model.addAttribute("film", film);
 
         return "opinion-page";
+    }
+
+    @GetMapping("/movies/info")
+    public String getInfo (Model model) {
+
+        ErrorResponse info = (ErrorResponse) filmService.getInfo().getBody();
+
+        System.out.println("info : " + info.getResponseMessage());
+
+        model.addAttribute("info", info.getResponseMessage());
+
+        return "info-page";
+    }
+
+    @GetMapping("/movies/info/{id}")
+    public String getFilmInfo (@PathVariable int id,
+                               Model model) {
+
+        FilmDTO filmDTO = (FilmDTO) filmService.getFilmWithAdditionalInfo(id, true, true).getBody();
+
+        model.addAttribute("film", filmDTO);
+
+        return "film-info";
     }
 
 

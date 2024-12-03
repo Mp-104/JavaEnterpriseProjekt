@@ -5,46 +5,49 @@
     <title>Login?</title>
 </head>
 <body>
-<h1>Login</h1>
-<form  th:action="@{/login}" method="post">
-    <label>
-        username
-        <input type="text" name="username" placeholder="username" required autofocus>
-    </label>
+    <h1>Login</h1>
 
-    <label>
-        password
-        <input type="password" name="password" placeholder="123" required>
-    </label>
+    <div>
+        <form  th:action="@{/login}" method="post">
+            <label>
+                username
+                <input type="text" name="username" placeholder="username" required autofocus>
+            </label>
 
-    <label>
-        Remember me
-        <input type="checkbox" name="remember-me">
-    </label>
+            <label>
+                password
+                <input type="password" name="password" placeholder="123" required>
+            </label>
 
-    <button type="submit">Logga in</button>
+            <label>
+                Remember me
+                <input type="checkbox" name="remember-me">
+            </label>
 
-</form>
+            <button type="submit">Logga in</button>
 
-<div th:if="${param.error}" th:text="${session.SPRING_SECURITY_LAST_EXCEPTION.message}">
-    <p>
-        [[${session.SPRING_SECURITY_LAST_EXCEPTION.message} ]]
-    </p>
+        </form>
+    </div>
 
-</div>
+    <div th:if="${param.error}" th:text="${session.SPRING_SECURITY_LAST_EXCEPTION.message}">
+        <p>
+            [[${session.SPRING_SECURITY_LAST_EXCEPTION.message} ]]
+        </p>
 
-<div th:if="${param.logout}" >
-    <p>
-        Du har loggat
-    </p>
+    </div>
 
-</div>
+    <div th:if="${param.logout}" >
+        <p>
+            Du har loggat
+        </p>
 
-<br/>
+    </div>
 
-<div>
-    <a href="/register">Registrera ny användare</a>
-</div>
+    <br/>
+
+    <div>
+        <a href="/register">Registrera ny användare</a>
+    </div>
 
 
 

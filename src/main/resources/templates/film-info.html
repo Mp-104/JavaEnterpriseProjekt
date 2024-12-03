@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${film.title}"></title>
+</head>
+<body>
+    <h1>Film Information</h1>
+    <br/>
+    <a href="/">Tillbaka</a>
+    <br/>
+    <br/>
+
+    <div>
+        <span>Namn: </span> <span th:text="${film.title}"></span>
+        <br/>
+        <br/>
+
+        <span>Åsikt: </span> <span th:text="${film.opinion}"></span>
+        <br/>
+        <br/>
+
+        <span>Deskription: </span> <span th:text="${film.description}"></span>
+    </div>
+
+
+</body>
+</html>

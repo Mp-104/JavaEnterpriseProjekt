@@ -24,11 +24,11 @@
     <div>
         <a href="/movies/savedfilms">Sparade filmer</a>
         <br>
-        <a href="/movies/search">kanske söka film PÅGÅENDE ARBETE</a>
+        <a href="/movies/search">kanske söka film</a>
         <br>
-        <a href="/movies/info">Film info ARBETE PÅGÅR</a>
+        <a href="/movies/info">Film info</a>
         <br>
-        <a href="/movies/searchid">Sök film på id ARBETE PÅGÅR</a>
+        <a href="/movies/searchid">Sök film på id externt</a>
         <br>
 
         <div sec:authorize="hasRole('ROLE_ADMIN')">
@@ -45,7 +45,7 @@
                 <span>Id: </span><span th:text="${film.id}">ID</span>
                 <br/>
 
-                <span>Titel: </span><a th:href="@{/films/getfilm/{id}(id=${film.filmid})}">
+                <span>Titel: </span><a th:href="@{/movies/info/{id}(id=${film.filmid})}">
 
                     <span th:text="${film.title}">Title</span>
                 </a>
