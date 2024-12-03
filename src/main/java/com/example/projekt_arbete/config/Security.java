@@ -50,7 +50,7 @@ public class Security {
                     authorizeRequests -> authorizeRequests
                             .requestMatchers( "https://localhost:8443/login", "/logout").permitAll()
                             .requestMatchers("/login", "/register").permitAll()
-                            .requestMatchers("/admin").hasRole(UserRole.ADMIN.toString())
+                            .requestMatchers("/admin", "/delete/*").hasRole(UserRole.ADMIN.toString())
                             .anyRequest().authenticated())
                 .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer
                         .loginPage("/login").permitAll())

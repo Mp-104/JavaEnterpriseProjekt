@@ -290,5 +290,13 @@ public class FilmController {
         return "film-info";
     }
 
+    @PostMapping("/movies/delete/{id}")
+    public String deleteFilm (@PathVariable int id) throws Exception {
+
+        filmService.deleteById(id);
+
+        return "redirect:/movies/savedfilms";
+    }
+
 
 }

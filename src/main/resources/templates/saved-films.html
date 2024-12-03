@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,8 +26,14 @@
         <li th:each="film, iter : ${films}">
             <span th:text="${film.title}">Film Title</span> -
             <a th:href="@{/films/savedfilms/{id}(id=${film.filmid})}">Se detaljer (Bara ett JSON objekt)</a>
-            <a th:href="@{/films/savedfilms/{id}/delete(id=${film.id})}">Delete (ej implementerat)</a>
-            <br/>
+
+
+            <form sec:authorize="hasRole('ROLE_ADMIN')" th:action="@{/movies/delete/{id}(id=${film.filmid})}" method="post">
+
+                <input type="hidden" name="id" th:value="${film.filmid}">
+                <button type="submit">Ta bort film</button>
+
+            </form>
 
 
             <button type="button" th:onclick="'toggleImage(\'img-' + ${iter.index} + '\')'">Visa/Dölj Bild</button>
