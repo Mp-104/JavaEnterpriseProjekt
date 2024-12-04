@@ -25,7 +25,7 @@
     <ul>
         <li th:each="film, iter : ${films}">
             <span th:text="${film.title}">Film Title</span> -
-            <a th:href="@{/films/savedfilms/{id}(id=${film.filmid})}">Se detaljer (Bara ett JSON objekt)</a>
+            <a th:href="@{/movies/savedfilms/{id}(id=${film.filmid})}">Se detaljer</a>
 
 
             <form sec:authorize="hasRole('ROLE_ADMIN')" th:action="@{/movies/delete/{id}(id=${film.filmid})}" method="post">
@@ -38,7 +38,7 @@
 
             <button type="button" th:onclick="'toggleImage(\'img-' + ${iter.index} + '\')'">Visa/Dölj Bild</button>
             <br/>
-            <img th:id="'img-' + ${iter.index}" th:src="'https://image.tmdb.org/t/p/original/' + ${film.poster_path}" style="display: none;">
+            <img th:id="'img-' + ${iter.index}" th:src="'https://image.tmdb.org/t/p/original/' + ${film.poster_path}" style="display: none; max-width: 300px">
             <br/>
             <br/>
         </li>

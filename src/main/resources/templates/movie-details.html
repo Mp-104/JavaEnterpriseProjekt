@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detaljer</title>
+    <script>
+      function toggleImage(imgId) {
+          const img = document.getElementById(imgId);
+          if (img.style.display === "none") {
+              img.style.display = "block";
+          } else {
+              img.style.display = "none";
+          }
+      }
+    </script>
+
+</head>
+<body>
+
+  <div style="max-width: 500px">
+    <h1 th:text="${film.title}"></h1>
+    <a href="/">Till startsidan</a>
+    <a href="/movies/savedfilms">Till filmsidan</a>
+    <br/>
+
+    <h2 th:text="${film.tagline}"></h2>
+
+    <button type="button" th:onclick="'toggleImage(1)'">Visa/Dölj Bild</button>
+    <br/>
+
+    <img th:id="1" th:src="'https://image.tmdb.org/t/p/original/' + ${film.poster_path}" style="display: block; max-width: 100%; max-height: 300">
+    <span th:text="${film.id}"></span>
+    <br/>
+    <br/>
+
+    <h4 th:text="${film.overview}"></h4>
+    <br/>
+    <br/>
+
+    <h3>Användare som har den här filmen på sin lista: </h3>
+
+    <ul>
+
+      <li th:each="user : ${film.customUsers}">
+
+        <span th:text="${user.username}"></span>
+        <!--<span th:text="${user.userFilms}"></span>-->
+
+      </li>
+
+    </ul>
+
+    <br/>
+    <br/>
+
+    <h3>Vad säger användare om filmen: </h3>
+
+    <ul>
+
+      <li th:each="userfilm : ${film.userFilms}">
+
+        <span>"</span><span th:text="${userfilm.opinion}"></span> <span>" - </span><span th:text="${userfilm.customUser.username}"></span>
+
+
+      </li>
+
+    </ul>
+
+  </div>
+</body>
+</html>

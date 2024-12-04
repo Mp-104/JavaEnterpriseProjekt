@@ -298,5 +298,20 @@ public class FilmController {
         return "redirect:/movies/savedfilms";
     }
 
+    @GetMapping("/movies/savedfilms/{id}")
+    public String getFilm (@PathVariable int id, Model model) {
+
+        FilmModel film = (FilmModel) filmService.findById(id).getBody();
+
+        //film.getCustomUsers().get(1).getUserFilms().get(1).getOpinion();
+
+        //film.getUserFilms().get(1).getOpinion()
+
+
+
+        model.addAttribute("film", film);
+        return "movie-details";
+    }
+
 
 }

@@ -46,6 +46,8 @@ public class DBInit {
 
         userService.saveUser(user0);
         userService.saveUser(user1);
+
+        filmService.saveFilmById("movie", 454626);
     }
 
 }
