@@ -2,7 +2,7 @@ package com.example.projekt_arbete.service;
 
 import com.example.projekt_arbete.dao.IFilmDAO;
 import com.example.projekt_arbete.model.CustomUser;
-import com.example.projekt_arbete.model.FilmDTO;
+import com.example.projekt_arbete.dto.FilmDTO;
 import com.example.projekt_arbete.model.FilmModel;
 import com.example.projekt_arbete.model.UserFilm;
 import com.example.projekt_arbete.response.ErrorResponse;
@@ -12,7 +12,6 @@ import io.github.resilience4j.ratelimiter.RateLimiter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;

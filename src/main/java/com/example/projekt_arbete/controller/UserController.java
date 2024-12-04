@@ -2,11 +2,10 @@ package com.example.projekt_arbete.controller;
 
 import com.example.projekt_arbete.authorities.UserRole;
 import com.example.projekt_arbete.model.CustomUser;
-import com.example.projekt_arbete.model.UserDTO;
+import com.example.projekt_arbete.dto.UserDTO;
 import com.example.projekt_arbete.service.IUserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -51,7 +49,7 @@ public class UserController {
     public String registerPage (Model model) {
 
 
-        model.addAttribute("user", new UserDTO("", "", null));
+        model.addAttribute("user", new UserDTO("", "", UserRole.USER));
         model.addAttribute("roles", UserRole.values());
         return "register";
     }
@@ -82,7 +80,7 @@ public class UserController {
 
         model.addAttribute("status", userService.saveUser(userDTO));
         model.addAttribute("roles" , UserRole.values());
-        model.addAttribute("user" , new UserDTO("", "", null));
+        model.addAttribute("user" , new UserDTO("", "", UserRole.USER));
 
         return "register";
     }

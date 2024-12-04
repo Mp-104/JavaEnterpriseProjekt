@@ -1,8 +1,7 @@
 package com.example.projekt_arbete.repository;
 
 import com.example.projekt_arbete.authorities.UserRole;
-import com.example.projekt_arbete.model.CustomUser;
-import com.example.projekt_arbete.model.UserDTO;
+import com.example.projekt_arbete.dto.UserDTO;
 import com.example.projekt_arbete.service.IFilmService;
 import com.example.projekt_arbete.service.IUserService;
 import jakarta.annotation.PostConstruct;

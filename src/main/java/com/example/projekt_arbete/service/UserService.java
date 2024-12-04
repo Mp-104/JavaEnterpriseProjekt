@@ -1,9 +1,11 @@
 package com.example.projekt_arbete.service;
 
+import com.example.projekt_arbete.authorities.UserRole;
 import com.example.projekt_arbete.dao.IFilmDAO;
+import com.example.projekt_arbete.dao.IUserDAO;
 import com.example.projekt_arbete.model.CustomUser;
 import com.example.projekt_arbete.model.FilmModel;
-import com.example.projekt_arbete.model.UserDTO;
+import com.example.projekt_arbete.dto.UserDTO;
 import com.example.projekt_arbete.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,21 +17,24 @@ import java.util.Optional;
 @Service
 public class UserService implements IUserService{
 
-    private final UserRepository userRepository;
+    //private final UserRepository userRepository;
+    private final IUserDAO userDAO;
+
     private final PasswordEncoder encoder;
 
     private final IFilmDAO filmDAO;
 
     @Autowired
-    public UserService (UserRepository userRepository, PasswordEncoder encoder, IFilmDAO filmDAO) {
-        this.userRepository = userRepository;
+    public UserService (IUserDAO userDAO, PasswordEncoder encoder, IFilmDAO filmDAO) {
+        //this.userRepository = userRepository;
+        this.userDAO = userDAO;
         this.encoder = encoder;
         this.filmDAO = filmDAO;
     }
 
     @Override
     public Optional<CustomUser> findUserById(Long id) {
-        return userRepository.findById(id);
+        return userDAO.findById(id);
     }
 
     @Override
@@ -37,16 +42,23 @@ public class UserService implements IUserService{
 
         try {
 
-            if (userRepository.findByUsername(userDTO.username()).isEmpty()) {
+            if (userDAO.findByUsername(userDTO.username()).isEmpty()) {
                 CustomUser newUser = new CustomUser(userDTO.username(), encoder.encode(userDTO.password()));
+
                 newUser.setUserRole(userDTO.userRole());
+
+                if (userDTO.userRole() == null) {
+                    newUser.setUserRole(UserRole.USER);
+                }
+
+
                 newUser.setAccountNonLocked(true);
                 newUser.setEnabled(true);
 
                 newUser.setAccountNonExpired(true);
                 newUser.setCredentialNonExpired(true);
 
-                userRepository.save(newUser);
+                userDAO.save(newUser);
 
                 return "användare registrerad";
 
@@ -64,25 +76,25 @@ public class UserService implements IUserService{
     @Override
     public Optional<CustomUser> findUserByUsername (String username) {
 
-        return userRepository.findByUsername(username);
+        return userDAO.findByUsername(username);
 
     }
 
     @Override
     public List<CustomUser> getAllUsers() {
 
-        return userRepository.findAll();
+        return userDAO.findAll();
     }
 
     @Override
     public void deleteUserById (Long id) {
-        CustomUser user = userRepository.findById(id).get();
+        CustomUser user = userDAO.findById(id).get();
 
         for (FilmModel film : user.getFilmList()) {
             film.getCustomUsers().remove(user);
             filmDAO.save(film);
         }
 
-        userRepository.deleteById(id);
+        userDAO.deleteById(id);
     }
 }

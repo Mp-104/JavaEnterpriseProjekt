@@ -1,4 +1,4 @@
-package com.example.projekt_arbete.model;
+package com.example.projekt_arbete.dto;
 
 import com.example.projekt_arbete.response.Response;
 

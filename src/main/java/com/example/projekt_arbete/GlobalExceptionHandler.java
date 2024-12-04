@@ -1,7 +1,7 @@
 package com.example.projekt_arbete;
 
 import com.example.projekt_arbete.authorities.UserRole;
-import com.example.projekt_arbete.model.UserDTO;
+import com.example.projekt_arbete.dto.UserDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;

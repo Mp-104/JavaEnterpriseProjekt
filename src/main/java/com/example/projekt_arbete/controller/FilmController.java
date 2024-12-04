@@ -1,5 +1,7 @@
 package com.example.projekt_arbete.controller;
 
+import com.example.projekt_arbete.dto.FilmDTO;
+import com.example.projekt_arbete.dto.UserFilmDTO;
 import com.example.projekt_arbete.model.*;
 import com.example.projekt_arbete.response.ErrorResponse;
 import com.example.projekt_arbete.response.Response;

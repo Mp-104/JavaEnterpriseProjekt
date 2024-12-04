@@ -3,7 +3,7 @@ package com.example.projekt_arbete.service;
 import com.example.projekt_arbete.client.FilmApiClient;
 import com.example.projekt_arbete.dao.IFilmDAO;
 import com.example.projekt_arbete.model.CustomUser;
-import com.example.projekt_arbete.model.FilmDTO;
+import com.example.projekt_arbete.dto.FilmDTO;
 import com.example.projekt_arbete.model.FilmModel;
 import com.example.projekt_arbete.model.UserFilm;
 import com.example.projekt_arbete.response.ErrorResponse;
@@ -19,14 +19,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.*;
 
 // Do more error handling

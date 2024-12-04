@@ -1,4 +1,4 @@
-package com.example.projekt_arbete.model;
+package com.example.projekt_arbete.dto;
 
 public class UserFilmDTO {
     private Integer id;

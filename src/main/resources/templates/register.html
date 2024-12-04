@@ -45,12 +45,14 @@
             </ul>
         </div>
 
+        <!--
         <label>
             roll:
             <select th:field="*{userRole}">
                 <option th:each="index : ${roles}" th:value="${index}" th:text="${index}"></option>
             </select>
         </label>
+        -->
 
         <div th:if="${#fields.hasErrors('userRole')}" class="error">
             <ul>

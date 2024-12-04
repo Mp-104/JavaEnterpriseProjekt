@@ -1,7 +1,7 @@
 package com.example.projekt_arbete.service;
 
 import com.example.projekt_arbete.model.CustomUser;
-import com.example.projekt_arbete.model.UserDTO;
+import com.example.projekt_arbete.dto.UserDTO;
 
 import java.util.List;
 import java.util.Optional;
