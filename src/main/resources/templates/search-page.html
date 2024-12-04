@@ -25,7 +25,7 @@
     <div th:if="${film != null}">
         <p>Sökning för: <span th:text="${filmName}"></span></p>
 
-        <a th:href="@{/films/getfilm/{id}(id=${film.id})}"><span th:text="${film.title}">Title</span></a>
+        <a th:href="@{/movies/savedfilms/{id}(id=${film.id})}"><span th:text="${film.title}">Title</span></a>
 
     </div>
 

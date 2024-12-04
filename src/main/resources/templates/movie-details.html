@@ -20,7 +20,28 @@
   <div style="max-width: 500px">
     <h1 th:text="${film.title}"></h1>
     <a href="/">Till startsidan</a>
+    <br/>
     <a href="/movies/savedfilms">Till filmsidan</a>
+
+    <div th:if="${saved}">
+      <p th:text="${saved}"></p>
+    </div>
+
+    <div th:if="${saved == null}">
+      <!--
+      <form th:action="@{/films/{id}(id=${film.id})}" th:object="${film}" method="post">
+              <input type="hidden" th:field="*{id}"/>
+              <button type="submit">Lägg till film: Controller saveFilmById</button>
+      </form>
+      -->
+
+      <form th:action="@{/movies/savefilm}" th:object="${film}" method="post">
+        <input type="hidden" th:field="*{id}"/>
+        <button type="submit">Lägg till film</button>
+      </form>
+
+    </div>
+
     <br/>
 
     <h2 th:text="${film.tagline}"></h2>
@@ -53,7 +74,7 @@
     <br/>
     <br/>
 
-    <h3>Vad säger användare om filmen: </h3>
+    <h3 th:if="${not #lists.isEmpty(film.userFilms)}">Vad säger användare om filmen: </h3>
 
     <ul>
 

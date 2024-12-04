@@ -308,7 +308,18 @@ public class FilmController {
         //film.getCustomUsers().get(1).getUserFilms().get(1).getOpinion();
 
         //film.getUserFilms().get(1).getOpinion()
+        //film.getUserFilms().get(1).getOpinion();
 
+        List<FilmModel> userFilms = userService.findUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName()).get().getFilmList();
+
+        for (FilmModel filmModel : userFilms) {
+
+            if (Objects.equals(filmModel.getTitle(), film.getTitle())) {
+
+                model.addAttribute("saved", "Du har filmen sparad");
+            }
+
+        }
 
 
         model.addAttribute("film", film);
