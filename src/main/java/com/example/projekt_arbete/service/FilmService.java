@@ -635,6 +635,14 @@ public class FilmService implements IFilmService{
     public Optional<FilmModel> findByTitleIgnoreCase(String filmName) {
 
         return filmDao.findByTitleIgnoreCase(filmName);
+
+
+    }
+
+    @Override
+    public List<FilmModel> findByTitleContainingIgnoreCase(String filmName) {
+
+        return filmDao.findByTitleContainingIgnoreCase(filmName);
     }
 
 

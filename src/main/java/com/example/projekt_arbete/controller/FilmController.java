@@ -105,21 +105,27 @@ public class FilmController {
 //
 //            model.addAttribute("error", "ingen sån film");
 //        }
+        List<FilmModel> filmList = filmService.findByTitleContainingIgnoreCase(filmName);
 
-        if (filmService.findByTitleIgnoreCase(filmName).isPresent()) {
+        if (filmList.isEmpty()) {
             //FilmModel response1 = filmService.findByTitle(filmName).get();
-            FilmModel response = filmService.findByTitleIgnoreCase(filmName.trim().toLowerCase()).get();
 
-            FilmDTO film = new FilmDTO();
-
-            film.setTitle(response.getTitle());
-            film.setId((long) response.getFilmid());
-            model.addAttribute("film", film);
-            model.addAttribute("filmName", filmName);
-        } else {
             model.addAttribute("error", "ingen sån film");
+//            FilmModel response = filmService.findByTitleIgnoreCase(filmName.trim().toLowerCase()).get();
+//
+//            FilmDTO film = new FilmDTO();
+//
+//            film.setTitle(response.getTitle());
+//            film.setId((long) response.getFilmid());
+//            model.addAttribute("film", film);
+//            model.addAttribute("filmName", filmName);
         }
 
+        if (!filmName.isBlank()) {
+            model.addAttribute("filmName", filmName);
+        }
+
+        model.addAttribute("filmList", filmList);
 
         return "search-page";
     }

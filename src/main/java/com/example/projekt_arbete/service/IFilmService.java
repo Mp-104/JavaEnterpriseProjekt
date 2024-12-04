@@ -38,4 +38,6 @@ public interface IFilmService {
     Optional<FilmModel> findByTitle(String filmName);
 
     Optional<FilmModel> findByTitleIgnoreCase(String filmName);
+
+    List<FilmModel> findByTitleContainingIgnoreCase(String filmName);
 }

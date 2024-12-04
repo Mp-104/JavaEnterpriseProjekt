@@ -21,6 +21,8 @@ public interface IFilmDAO {
 
     Optional<FilmModel> findByTitleIgnoreCase(String filmName);
 
+    List<FilmModel> findByTitleContainingIgnoreCase(String title);
+
     //ResponseEntity<Response> getFilmById(int id);
 
     //ResponseEntity<Response> saveFilmById(String movie, int id);

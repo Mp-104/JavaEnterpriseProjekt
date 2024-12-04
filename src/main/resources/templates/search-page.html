@@ -18,16 +18,29 @@
 
     </form>
 
-    <div th:if="${error}">
-        <p th:text="${error}"></p>
-    </div>
 
+
+    <!--
     <div th:if="${film != null}">
-        <p>Sökning för: <span th:text="${filmName}"></span></p>
+
 
         <a th:href="@{/movies/savedfilms/{id}(id=${film.id})}"><span th:text="${film.title}">Title</span></a>
 
     </div>
+    -->
+
+    <p th:if="${filmName}">Sökning för: <span th:text="${filmName}"></span></p>
+
+    <div th:if="${error}">
+        <p th:text="${error}"></p>
+    </div>
+
+    <ul>
+        <li th:each="result : ${filmList}">
+            <a th:href="@{/movies/savedfilms/{id}(id=${result.filmid})}"><span th:text="${result.title}">Title</span></a>
+
+        </li>
+    </ul>
 
 
 

@@ -1,28 +1,10 @@
 package com.example.projekt_arbete.dao;
 
-import com.example.projekt_arbete.model.CustomUser;
 import com.example.projekt_arbete.model.FilmModel;
 import com.example.projekt_arbete.repository.FilmRepository;
-import com.example.projekt_arbete.response.ErrorResponse;
-import com.example.projekt_arbete.response.Response;
-import com.example.projekt_arbete.service.IUserService;
-import io.github.resilience4j.ratelimiter.RateLimiter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,6 +63,11 @@ public class FilmDAO implements IFilmDAO {
     @Override
     public Optional<FilmModel> findByTitleIgnoreCase(String filmName) {
         return filmRepository.findByTitleIgnoreCase(filmName);
+    }
+
+    @Override
+    public List<FilmModel> findByTitleContainingIgnoreCase(String title) {
+        return filmRepository.findByTitleContainingIgnoreCase(title);
     }
 
     /*
